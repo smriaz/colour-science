@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>08 — Color Difference (ΔE) • Color Lab</title>
+  <meta name="description" content="Measure how different two colors look using ΔE. Compare ΔE76 vs ΔE2000 and try a just-noticeable-difference game." />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+
+  <style>
+    .crumbs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; color: var(--muted); font-size: 13px; }
+    .crumbs a{ color: var(--text); text-decoration:none; }
+    .crumbs a:hover{ text-decoration: underline; }
+
+    .lesson-head{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
+    .lesson-head .seg{ max-width: 520px; width: 100%; }
+
+    .level-block{ display:none; }
+    html[data-level="kids"] .level-kids{ display:block; }
+    html[data-level="mid"]  .level-mid{ display:block; }
+    html[data-level="uni"]  .level-uni{ display:block; }
+
+    .callout{
+      border-left: 4px solid rgba(255,211,107,0.70);
+      padding: 12px 14px;
+      background: rgba(255,211,107,0.10);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .tryit-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 900px){ .tryit-grid{ grid-template-columns: 1fr; } }
+
+    .control{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      margin-bottom: 10px;
+    }
+    .control label{ font-weight: 850; display:flex; justify-content:space-between; gap:10px; }
+    .control input[type="range"]{ width:100%; }
+    .control input[type="text"]{ width:100%; }
+
+    .hint{ font-size: 12.5px; color: var(--muted); }
+
+    .panel{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+
+    .two{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 640px){ .two{ grid-template-columns: 1fr; } }
+
+    .swatch{
+      height: 130px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #222;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
+    }
+
+    .row{
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    input[type="text"]{
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      outline: none;
+    }
+    input[type="text"]:focus{
+      border-color: rgba(255,211,107,0.55);
+      box-shadow: 0 0 0 4px rgba(255,211,107,0.12);
+    }
+
+    .meterline{
+      height: 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      overflow:hidden;
+      position:relative;
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      background: rgba(255,255,255,0.80);
+    }
+
+    .mini-table{
+      width:100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.12);
+      margin-top: 10px;
+    }
+    .mini-table th, .mini-table td{
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      text-align:left;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .mini-table th{ color: rgba(255,255,255,0.82); font-weight: 850; }
+    .mini-table tr:last-child td{ border-bottom:none; }
+    .mini-table td strong{ color: var(--text); }
+
+    .note{ display:flex; gap:12px; align-items:flex-start; }
+    .note__icon{ font-size: 20px; }
+
+    /* JND game */
+    .grid3{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 720px){ .grid3{ grid-template-columns: 1fr; } }
+
+    .cardbtn{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+      cursor:pointer;
+      text-align:left;
+    }
+    .cardbtn:hover{ background: rgba(255,255,255,0.09); }
+    .cardbtn .swatch{ height: 90px; }
+
+    .result{
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(124,247,212,0.10);
+      color: var(--text);
+      margin-top: 10px;
+    }
+
+    .pager{
+      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .pager .btn{ min-width: 160px; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Interactive color science</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="../index.html">Home</a>
+        <a class="nav__link" href="./glossary.html">Glossary</a>
+        <a class="nav__link" href="./about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span aria-hidden="true">›</span>
+      <span>Module C — Models & conversion</span>
+      <span aria-hidden="true">›</span>
+      <strong>08 — Color difference (ΔE)</strong>
+    </div>
+
+    <section class="card">
+      <div class="lesson-head">
+        <div>
+          <h1>08 — Color difference (ΔE)</h1>
+          <p class="lead">
+            How different do two colors look? A common way to quantify that is
+            <strong>ΔE</strong> (“delta E”), measured in a color space like Lab.
+          </p>
+        </div>
+
+        <div aria-label="Difficulty level">
+          <div class="seg" role="group" aria-label="Difficulty toggle">
+            <button class="seg__btn" type="button" data-level="kids" aria-pressed="true">Kids / Beginner</button>
+            <button class="seg__btn" type="button" data-level="mid" aria-pressed="false">Intermediate</button>
+            <button class="seg__btn" type="button" data-level="uni" aria-pressed="false">University</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" role="note">
+        <strong>Big idea:</strong> RGB distance is not a good measure of “how different it looks.”
+        Lab-based differences (ΔE) match perception much better.
+      </div>
+
+      <div class="level-block level-kids">
+        <h2>ΔE is a “difference score”</h2>
+        <ul>
+          <li>Small ΔE → colors look almost the same</li>
+          <li>Bigger ΔE → easier to tell apart</li>
+        </ul>
+        <p class="muted">We’ll try a game where you hunt for the “odd one out.”</p>
+      </div>
+
+      <div class="level-block level-mid">
+        <h2>ΔE76 vs ΔE2000</h2>
+        <ul>
+          <li><strong>ΔE76:</strong> straight distance in Lab (simple and fast)</li>
+          <li><strong>ΔE2000:</strong> improved model that better matches perception (especially in some regions)</li>
+        </ul>
+        <p class="muted">
+          In printing and quality control, ΔE thresholds are used to decide if a match is acceptable.
+        </p>
+      </div>
+
+      <div class="level-block level-uni">
+        <h2>Why ΔE2000 exists</h2>
+        <p>
+          Lab isn’t perfectly uniform: equal distances don’t always look equally different.
+          ΔE2000 adds weighting and corrections (hue/chroma/lightness interactions) to better approximate visual difference.
+        </p>
+        <p class="muted">
+          It’s widely used in color QA and printing specs. (We’ll implement it below.)
+        </p>
+      </div>
+    </section>
+
+    <!-- Try it -->
+    <section class="card" aria-label="Try it">
+      <div class="section-head">
+        <h2>Try it: Compare ΔE76 and ΔE2000</h2>
+        <p class="muted">Pick two colors, then see how the metrics respond.</p>
+      </div>
+
+      <div class="tryit-grid">
+        <div>
+          <div class="control">
+            <label for="hex1">Color 1 hex <span class="kbd">#RRGGBB</span></label>
+            <input id="hex1" type="text" value="#3AA7FF" autocomplete="off" spellcheck="false" />
+            <div class="hint">Tip: try two very similar colors (change one digit).</div>
+          </div>
+
+          <div class="control">
+            <label for="hex2">Color 2 hex <span class="kbd">#RRGGBB</span></label>
+            <input id="hex2" type="text" value="#33FF99" autocomplete="off" spellcheck="false" />
+            <div class="hint">Example: <span class="kbd">#3AA7FF</span> vs <span class="kbd">#3AA6FF</span></div>
+          </div>
+
+          <div class="control">
+            <label for="nudge">Nudge Color 2 (tiny change) <span class="kbd" id="nudgeNum">0</span></label>
+            <input id="nudge" type="range" min="-20" max="20" step="1" value="0" />
+            <div class="hint">This adds a small offset to Color 2’s RGB values to create near-misses.</div>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn--ghost" type="button" id="swapBtn">⇄ Swap</button>
+            <button class="btn btn--ghost" type="button" id="randCloseBtn">🎲 Random (close)</button>
+            <button class="btn btn--ghost" type="button" id="randFarBtn">🎲 Random (far)</button>
+          </div>
+
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">🖨️</div>
+            <div>
+              <strong>Printing link:</strong> ΔE is often used for ink/press calibration and proofing decisions.
+              “Good enough” depends on material, lighting, and tolerances.
+            </div>
+          </div>
+
+          <div class="note card card--inset" role="note">
+            <div class="note__icon" aria-hidden="true">👁️</div>
+            <div>
+              <strong>Vision link:</strong> ΔE2000 is trying (imperfectly) to match human perception.
+              Small numbers can still be noticeable in some contexts.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="two">
+            <div class="panel">
+              <div class="muted" style="font-size:13px;">Color 1</div>
+              <div class="swatch" id="sw1" aria-label="Color 1 swatch"></div>
+              <div class="row"><span>RGB</span><strong id="rgb1">—</strong></div>
+              <div class="row"><span>Lab</span><strong id="lab1">—</strong></div>
+            </div>
+            <div class="panel">
+              <div class="muted" style="font-size:13px;">Color 2</div>
+              <div class="swatch" id="sw2" aria-label="Color 2 swatch"></div>
+              <div class="row"><span>RGB</span><strong id="rgb2">—</strong></div>
+              <div class="row"><span>Lab</span><strong id="lab2">—</strong></div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:12px;">
+            <table class="mini-table" aria-label="Delta E table">
+              <thead>
+                <tr><th>Metric</th><th>Value</th><th>Rule of thumb</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>ΔE76</strong></td>
+                  <td><strong id="de76">—</strong></td>
+                  <td id="hint76">—</td>
+                </tr>
+                <tr>
+                  <td><strong>ΔE2000</strong></td>
+                  <td><strong id="de00">—</strong></td>
+                  <td id="hint00">—</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="margin-top:12px;">
+              <div class="muted" style="font-size:13px;">Difference meter (scaled)</div>
+              <div class="meterline"><div class="fill" id="meterFill"></div></div>
+              <div class="row">
+                <span>Scale</span>
+                <strong class="kbd">0 → 10 → 25+</strong>
+              </div>
+            </div>
+
+            <p class="tiny muted" style="margin-top:10px;">
+              These “rules of thumb” are context-dependent (lighting, surround, texture, etc.).
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Game -->
+    <section class="card" aria-label="Game">
+      <div class="section-head">
+        <h2>Mini-game: Spot the odd patch</h2>
+        <p class="muted">Two patches match, one is slightly different. Can you find it?</p>
+      </div>
+
+      <div class="grid3" id="gameGrid" aria-label="Patch choices">
+        <!-- buttons inserted by JS -->
+      </div>
+
+      <div class="panel" style="margin-top:12px;">
+        <div class="control" style="margin:0;">
+          <label for="gameDE">Difficulty (approx ΔE2000) <span class="kbd" id="gameDENum">2.0</span></label>
+          <input id="gameDE" type="range" min="0.5" max="8" step="0.1" value="2.0" />
+          <div class="hint">Lower is harder. Around 1–2 can be “barely noticeable” for many people (not always!).</div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+          <button class="btn btn--primary" type="button" id="newRoundBtn">New round</button>
+          <button class="btn btn--ghost" type="button" id="revealBtn">Reveal answer</button>
+        </div>
+
+        <div class="result" id="gameResult" role="status" aria-live="polite" hidden></div>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Recap">
+      <div class="section-head">
+        <h2>What you learned</h2>
+        <p class="muted">Short recap.</p>
+      </div>
+      <ul>
+        <li>ΔE is a way to quantify perceived color difference (usually using Lab).</li>
+        <li>ΔE76 is simple; ΔE2000 usually matches perception better.</li>
+        <li>Printing often uses ΔE tolerances for matching and quality control.</li>
+      </ul>
+    </section>
+
+    <nav class="pager" aria-label="Lesson navigation">
+      <a class="btn btn--ghost" href="./07-xyz-and-lab.html">← Previous: XYZ & Lab</a>
+      <a class="btn" href="../index.html">🏠 Home</a>
+      <a class="btn btn--primary" href="./09-color-matching.html">Next: Color matching & metamerism →</a>
+    </nav>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">Up next: Color matching</div>
+          <div class="muted">Why different spectra can look the same — and why that matters for printing.</div>
+        </div>
+        <div class="footer__right">
+          <a class="btn btn--small" href="./09-color-matching.html">Continue</a>
+        </div>
+      </div>
+      <div class="tiny muted">Level setting is saved only in your browser (no account, no tracking).</div>
+    </footer>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    // ---------- Core helpers ----------
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+    function clamp255(x){ return Math.max(0, Math.min(255, x)); }
+    function hex2(n){ return n.toString(16).padStart(2,"0"); }
+    function rgbToHex(r,g,b){ return ("#" + hex2(r) + hex2(g) + hex2(b)).toUpperCase(); }
+    function parseHex(str){
+      const s = str.trim();
+      const m = s.match(/^#?([0-9a-fA-F]{6})$/);
+      if (!m) return null;
+      const v = m[1];
+      return {
+        r: parseInt(v.slice(0,2),16),
+        g: parseInt(v.slice(2,4),16),
+        b: parseInt(v.slice(4,6),16),
+      };
+    }
+    function fmtLab(lab){ return `L ${lab.L.toFixed(2)}, a ${lab.a.toFixed(2)}, b ${lab.b.toFixed(2)}`; }
+    function fmtRgb(rgb){ return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`; }
+
+    // ---------- sRGB ↔ linear ----------
+    function srgbToLinear(c){ return (c <= 0.04045) ? (c / 12.92) : Math.pow((c + 0.055) / 1.055, 2.4); }
+    function linearToSrgb(c){ return (c <= 0.0031308) ? (12.92 * c) : (1.055 * Math.pow(c, 1/2.4) - 0.055); }
+
+    // ---------- sRGB (D65) ↔ XYZ ----------
+    function rgbToXyz(rgb){
+      const r = srgbToLinear(rgb.r / 255);
+      const g = srgbToLinear(rgb.g / 255);
+      const b = srgbToLinear(rgb.b / 255);
+      return {
+        X: 0.4124564*r + 0.3575761*g + 0.1804375*b,
+        Y: 0.2126729*r + 0.7151522*g + 0.0721750*b,
+        Z: 0.0193339*r + 0.1191920*g + 0.9503041*b,
+      };
+    }
+
+    // ---------- XYZ ↔ Lab (D65) ----------
+    const D65 = { Xn: 0.95047, Yn: 1.00000, Zn: 1.08883 };
+    function fLab(t){
+      const d = 6/29;
+      return (t > Math.pow(d,3)) ? Math.cbrt(t) : (t/(3*d*d) + 4/29);
+    }
+    function xyzToLab(xyz){
+      const xr = xyz.X / D65.Xn;
+      const yr = xyz.Y / D65.Yn;
+      const zr = xyz.Z / D65.Zn;
+      const fx = fLab(xr), fy = fLab(yr), fz = fLab(zr);
+      return { L: 116*fy - 16, a: 500*(fx - fy), b: 200*(fy - fz) };
+    }
+
+    // ---------- ΔE76 ----------
+    function deltaE76(l1, l2){
+      const dL = l1.L - l2.L, da = l1.a - l2.a, db = l1.b - l2.b;
+      return Math.sqrt(dL*dL + da*da + db*db);
+    }
+
+    // ---------- ΔE2000 (CIEDE2000) ----------
+    // Implementation based on the published formula; returns ΔE00.
+    function deg2rad(d){ return d * Math.PI / 180; }
+    function rad2deg(r){ return r * 180 / Math.PI; }
+
+    function deltaE2000(lab1, lab2, kL=1, kC=1, kH=1){
+      const L1 = lab1.L, a1 = lab1.a, b1 = lab1.b;
+      const L2 = lab2.L, a2 = lab2.a, b2 = lab2.b;
+
+      const C1 = Math.sqrt(a1*a1 + b1*b1);
+      const C2 = Math.sqrt(a2*a2 + b2*b2);
+      const Cbar = (C1 + C2) / 2;
+
+      const Cbar7 = Math.pow(Cbar, 7);
+      const G = 0.5 * (1 - Math.sqrt(Cbar7 / (Cbar7 + Math.pow(25,7))));
+
+      const a1p = (1 + G) * a1;
+      const a2p = (1 + G) * a2;
+
+      const C1p = Math.sqrt(a1p*a1p + b1*b1);
+      const C2p = Math.sqrt(a2p*a2p + b2*b2);
+
+      const h1p = hp(a1p, b1);
+      const h2p = hp(a2p, b2);
+
+      const dLp = L2 - L1;
+      const dCp = C2p - C1p;
+
+      const dhp = dhPrime(C1p, C2p, h1p, h2p);
+      const dHp = 2 * Math.sqrt(C1p*C2p) * Math.sin(deg2rad(dhp/2));
+
+      const Lbarp = (L1 + L2) / 2;
+      const Cbarp = (C1p + C2p) / 2;
+
+      const hbarp = hBarPrime(C1p, C2p, h1p, h2p);
+
+      const T = 1
+        - 0.17 * Math.cos(deg2rad(hbarp - 30))
+        + 0.24 * Math.cos(deg2rad(2*hbarp))
+        + 0.32 * Math.cos(deg2rad(3*hbarp + 6))
+        - 0.20 * Math.cos(deg2rad(4*hbarp - 63));
+
+      const dTheta = 30 * Math.exp(-Math.pow((hbarp - 275)/25, 2));
+      const RC = 2 * Math.sqrt(Math.pow(Cbarp,7) / (Math.pow(Cbarp,7) + Math.pow(25,7)));
+      const RT = -Math.sin(deg2rad(2*dTheta)) * RC;
+
+      const SL = 1 + (0.015 * Math.pow(Lbarp - 50, 2)) / Math.sqrt(20 + Math.pow(Lbarp - 50, 2));
+      const SC = 1 + 0.045 * Cbarp;
+      const SH = 1 + 0.015 * Cbarp * T;
+
+      const dLterm = dLp / (kL * SL);
+      const dCterm = dCp / (kC * SC);
+      const dHterm = dHp / (kH * SH);
+
+      return Math.sqrt(dLterm*dLterm + dCterm*dCterm + dHterm*dHterm + RT*dCterm*dHterm);
+
+      function hp(ap, b){
+        if (ap === 0 && b === 0) return 0;
+        let h = rad2deg(Math.atan2(b, ap));
+        if (h < 0) h += 360;
+        return h;
+      }
+      function dhPrime(C1p, C2p, h1p, h2p){
+        if (C1p*C2p === 0) return 0;
+        const dh = h2p - h1p;
+        if (Math.abs(dh) <= 180) return dh;
+        if (dh > 180) return dh - 360;
+        return dh + 360; // dh < -180
+      }
+      function hBarPrime(C1p, C2p, h1p, h2p){
+        if (C1p*C2p === 0) return h1p + h2p;
+        const dh = Math.abs(h1p - h2p);
+        if (dh <= 180) return (h1p + h2p) / 2;
+        // wrap-around
+        if ((h1p + h2p) < 360) return (h1p + h2p + 360) / 2;
+        return (h1p + h2p - 360) / 2;
+      }
+    }
+
+    function ruleOfThumb(de){
+      if (de < 1) return "Barely noticeable (often)";
+      if (de < 2) return "Small difference";
+      if (de < 5) return "Noticeable";
+      if (de < 10) return "Big difference";
+      return "Very different";
+    }
+
+    // ---------- UI wiring (Try it) ----------
+    const hex1 = document.getElementById("hex1");
+    const hex2 = document.getElementById("hex2");
+    const nudge = document.getElementById("nudge");
+    const nudgeNum = document.getElementById("nudgeNum");
+    const swapBtn = document.getElementById("swapBtn");
+    const randCloseBtn = document.getElementById("randCloseBtn");
+    const randFarBtn = document.getElementById("randFarBtn");
+
+    const sw1 = document.getElementById("sw1");
+    const sw2 = document.getElementById("sw2");
+    const rgb1El = document.getElementById("rgb1");
+    const rgb2El = document.getElementById("rgb2");
+    const lab1El = document.getElementById("lab1");
+    const lab2El = document.getElementById("lab2");
+
+    const de76El = document.getElementById("de76");
+    const de00El = document.getElementById("de00");
+    const hint76 = document.getElementById("hint76");
+    const hint00 = document.getElementById("hint00");
+    const meterFill = document.getElementById("meterFill");
+
+    function applyNudge(rgb, dn){
+      return {
+        r: clamp255(rgb.r + dn),
+        g: clamp255(rgb.g + dn),
+        b: clamp255(rgb.b + dn),
+      };
+    }
+
+    function updateDiff(){
+      const c1 = parseHex(hex1.value);
+      const c2raw = parseHex(hex2.value);
+
+      if (!c1){ hex1.style.borderColor = "rgba(255,120,120,0.75)"; return; }
+      else hex1.style.borderColor = "rgba(255,255,255,0.14)";
+
+      if (!c2raw){ hex2.style.borderColor = "rgba(255,120,120,0.75)"; return; }
+      else hex2.style.borderColor = "rgba(255,255,255,0.14)";
+
+      const dn = Number(nudge.value);
+      nudgeNum.textContent = dn;
+
+      const c2 = applyNudge(c2raw, dn);
+
+      sw1.style.background = `rgb(${c1.r},${c1.g},${c1.b})`;
+      sw2.style.background = `rgb(${c2.r},${c2.g},${c2.b})`;
+      rgb1El.textContent = fmtRgb(c1);
+      rgb2El.textContent = fmtRgb(c2);
+
+      const lab1 = xyzToLab(rgbToXyz(c1));
+      const lab2 = xyzToLab(rgbToXyz(c2));
+      lab1El.textContent = fmtLab(lab1);
+      lab2El.textContent = fmtLab(lab2);
+
+      const d76 = deltaE76(lab1, lab2);
+      const d00 = deltaE2000(lab1, lab2);
+
+      de76El.textContent = d76.toFixed(2);
+      de00El.textContent = d00.toFixed(2);
+      hint76.textContent = ruleOfThumb(d76);
+      hint00.textContent = ruleOfThumb(d00);
+
+      // Meter scaled: 0..25 (cap)
+      const t = clamp01(d00 / 25);
+      meterFill.style.width = (t * 100).toFixed(1) + "%";
+    }
+
+    hex1.addEventListener("input", updateDiff);
+    hex2.addEventListener("input", updateDiff);
+    nudge.addEventListener("input", updateDiff);
+
+    swapBtn.addEventListener("click", () => {
+      const a = hex1.value;
+      hex1.value = hex2.value;
+      hex2.value = a;
+      updateDiff();
+    });
+
+    function randHex(){
+      return rgbToHex(
+        Math.floor(Math.random()*256),
+        Math.floor(Math.random()*256),
+        Math.floor(Math.random()*256)
+      );
+    }
+
+    randFarBtn.addEventListener("click", () => {
+      nudge.value = "0";
+      hex1.value = randHex();
+      hex2.value = randHex();
+      updateDiff();
+    });
+
+    randCloseBtn.addEventListener("click", () => {
+      nudge.value = "0";
+      const base = parseHex(randHex());
+      // make a close neighbor by small random channel nudge
+      const dd = () => (Math.floor(Math.random()*13) - 6); // -6..+6
+      const near = {
+        r: clamp255(base.r + dd()),
+        g: clamp255(base.g + dd()),
+        b: clamp255(base.b + dd()),
+      };
+      hex1.value = rgbToHex(base.r, base.g, base.b);
+      hex2.value = rgbToHex(near.r, near.g, near.b);
+      updateDiff();
+    });
+
+    // ---------- JND Game ----------
+    const gameGrid = document.getElementById("gameGrid");
+    const gameDE = document.getElementById("gameDE");
+    const gameDENum = document.getElementById("gameDENum");
+    const newRoundBtn = document.getElementById("newRoundBtn");
+    const revealBtn = document.getElementById("revealBtn");
+    const gameResult = document.getElementById("gameResult");
+
+    let answerIndex = 0;
+    let round = null;
+
+    function randomBaseColor(){
+      // avoid extremes
+      return {
+        r: 40 + Math.floor(Math.random()*176),
+        g: 40 + Math.floor(Math.random()*176),
+        b: 40 + Math.floor(Math.random()*176),
+      };
+    }
+
+    function jitterRgb(rgb, mag){
+      // small random perturbation
+      const j = () => (Math.random()*2 - 1) * mag;
+      return {
+        r: clamp255(Math.round(rgb.r + j())),
+        g: clamp255(Math.round(rgb.g + j())),
+        b: clamp255(Math.round(rgb.b + j())),
+      };
+    }
+
+    function approximateToTargetDE(base, targetDE){
+      // heuristic: try random jitters until ΔE00 ~ targetDE (within tolerance)
+      const labBase = xyzToLab(rgbToXyz(base));
+      let best = {rgb: base, de: 0};
+      let bestErr = 1e9;
+
+      for (let i=0; i<240; i++){
+        const mag = 6 + targetDE * 10; // heuristic magnitude
+        const cand = jitterRgb(base, mag);
+        const labCand = xyzToLab(rgbToXyz(cand));
+        const d = deltaE2000(labBase, labCand);
+        const err = Math.abs(d - targetDE);
+        if (err < bestErr){
+          bestErr = err;
+          best = {rgb: cand, de: d};
+          if (err < 0.10) break;
+        }
+      }
+      return best;
+    }
+
+    function renderGame(){
+      gameGrid.innerHTML = "";
+      gameResult.hidden = true;
+      gameResult.textContent = "";
+
+      const targetDE = Number(gameDE.value);
+      gameDENum.textContent = targetDE.toFixed(1);
+
+      const base = randomBaseColor();
+      const odd = approximateToTargetDE(base, targetDE).rgb;
+
+      // choose answer slot
+      answerIndex = Math.floor(Math.random()*3);
+
+      const colors = [base, base, base];
+      colors[answerIndex] = odd;
+
+      round = { base, odd, targetDE };
+
+      for (let i=0; i<3; i++){
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "cardbtn";
+        btn.setAttribute("aria-label", "Patch option " + (i+1));
+
+        const sw = document.createElement("div");
+        sw.className = "swatch";
+        sw.style.background = `rgb(${colors[i].r},${colors[i].g},${colors[i].b})`;
+
+        const meta = document.createElement("div");
+        meta.className = "row";
+        meta.innerHTML = `<span>Option ${i+1}</span><strong class="kbd">${rgbToHex(colors[i].r, colors[i].g, colors[i].b)}</strong>`;
+
+        btn.appendChild(sw);
+        btn.appendChild(meta);
+
+        btn.addEventListener("click", () => {
+          const ok = (i === answerIndex);
+          const labBase = xyzToLab(rgbToXyz(base));
+          const labOdd  = xyzToLab(rgbToXyz(odd));
+          const d = deltaE2000(labBase, labOdd);
+
+          gameResult.hidden = false;
+          gameResult.innerHTML = ok
+            ? `<strong>✅ Nice!</strong> You found the odd patch. (Actual ΔE2000 ≈ <strong>${d.toFixed(2)}</strong>)`
+            : `<strong>❌ Not this time.</strong> The odd patch was Option <strong>${answerIndex+1}</strong>. (Actual ΔE2000 ≈ <strong>${d.toFixed(2)}</strong>)`;
+        });
+
+        gameGrid.appendChild(btn);
+      }
+    }
+
+    newRoundBtn.addEventListener("click", renderGame);
+    revealBtn.addEventListener("click", () => {
+      gameResult.hidden = false;
+      gameResult.innerHTML = `<strong>Answer:</strong> Option <strong>${answerIndex+1}</strong>.`;
+    });
+    gameDE.addEventListener("input", () => {
+      gameDENum.textContent = Number(gameDE.value).toFixed(1);
+    });
+    gameDE.addEventListener("change", renderGame);
+
+    // Init
+    updateDiff();
+    renderGame();
+  </script>
+</body>
+</html>
