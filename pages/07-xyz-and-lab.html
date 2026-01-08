@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>07 — CIEXYZ & CIELAB • Color Lab</title>
-  <meta name="description" content="Learn CIEXYZ and CIELAB: from RGB to measurement and perception. Interactive RGB↔XYZ↔Lab converter + ΔE preview." />
+  <title>07 — XYZ & Lab • Color Lab</title>
+  <meta name="description" content="Convert sRGB to XYZ and CIELAB, and compare two colors using ΔE76." />
   <link rel="stylesheet" href="../assets/css/base.css" />
 
   <style>
@@ -28,14 +28,27 @@
       border: 1px solid var(--line);
     }
 
-    .tryit-grid{
+    .grid{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap: 14px;
       align-items:start;
     }
-    @media (max-width: 900px){
-      .tryit-grid{ grid-template-columns: 1fr; }
+    @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
+
+    .panel{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+
+    .swatch{
+      height: 140px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background:#222;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
     }
 
     .control{
@@ -46,37 +59,32 @@
       border-radius: 18px;
       border: 1px solid var(--line);
       background: rgba(255,255,255,0.04);
-      margin-bottom: 10px;
+      margin-top: 10px;
     }
-    .control label{ font-weight: 850; display:flex; justify-content:space-between; gap:10px; }
+    .control label{
+      font-weight: 900;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:baseline;
+    }
     .control input[type="range"]{ width:100%; }
-    .control input[type="text"]{ width:100%; }
-
+    .control input[type="text"]{
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      padding: 10px 12px;
+      outline: none;
+      font-weight: 850;
+      letter-spacing: 0.5px;
+    }
+    .control input[type="text"]:focus{
+      border-color: rgba(124,247,212,0.55);
+      box-shadow: 0 0 0 3px rgba(124,247,212,0.15);
+    }
     .hint{ font-size: 12.5px; color: var(--muted); }
-
-    .panel{
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.04);
-      padding: 12px;
-    }
-
-    .two{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 640px){
-      .two{ grid-template-columns: 1fr; }
-    }
-
-    .swatch{
-      height: 120px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: #222;
-      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
-    }
 
     .row{
       display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
@@ -96,54 +104,16 @@
       white-space: nowrap;
     }
 
-    input[type="text"]{
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,0.18);
-      color: var(--text);
-      outline: none;
-    }
-    input[type="text"]:focus{
-      border-color: rgba(124,247,212,0.55);
-      box-shadow: 0 0 0 4px rgba(124,247,212,0.12);
-    }
+    .twoBtns{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
 
-    .mini-table{
-      width:100%;
-      border-collapse: collapse;
-      overflow:hidden;
-      border-radius: 16px;
+    .bigDE{
+      border-radius: 18px;
       border: 1px solid var(--line);
-      background: rgba(0,0,0,0.12);
+      background: rgba(255,211,107,0.10);
+      padding: 12px;
+      margin-top: 12px;
     }
-    .mini-table th, .mini-table td{
-      padding: 10px 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.10);
-      text-align:left;
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .mini-table th{ color: rgba(255,255,255,0.82); font-weight: 850; }
-    .mini-table tr:last-child td{ border-bottom:none; }
-    .mini-table td strong{ color: var(--text); }
-
-    .note{ display:flex; gap:12px; align-items:flex-start; }
-    .note__icon{ font-size: 20px; }
-
-    .meterline{
-      height: 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,0.18);
-      overflow:hidden;
-      position:relative;
-    }
-    .fill{
-      height:100%;
-      width:0%;
-      background: rgba(255,255,255,0.80);
-    }
+    .bigDE strong{ font-size: 18px; }
 
     .pager{
       display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
@@ -178,18 +148,18 @@
     <div class="crumbs" aria-label="Breadcrumb">
       <a href="../index.html">Home</a>
       <span aria-hidden="true">›</span>
-      <span>Module C — Models & conversion</span>
+      <span>Foundations</span>
       <span aria-hidden="true">›</span>
-      <strong>07 — CIEXYZ & Lab</strong>
+      <strong>07 — XYZ & Lab</strong>
     </div>
 
     <section class="card">
       <div class="lesson-head">
         <div>
-          <h1>07 — CIEXYZ & CIELAB</h1>
+          <h1>07 — XYZ & Lab</h1>
           <p class="lead">
-            RGB is a screen control system. <strong>CIEXYZ</strong> is a measurement-like bridge, and
-            <strong>CIELAB</strong> is a more “perception-friendly” space for comparing colors.
+            RGB is great for screens, but for measurement and comparison we often use
+            <strong>CIE XYZ</strong> and <strong>CIELAB</strong>.
           </p>
         </div>
 
@@ -203,183 +173,122 @@
       </div>
 
       <div class="callout" role="note">
-        <strong>Big idea:</strong> XYZ and Lab help us talk about color in ways that connect better to
-        <strong>human vision</strong> and to <strong>printing workflows</strong>.
+        <strong>Big idea:</strong> XYZ is a standard “hub” space, and Lab is a perceptual-ish space where distances
+        relate more to what people notice.
       </div>
 
       <div class="level-block level-kids">
-        <h2>Why do we need XYZ and Lab?</h2>
         <ul>
-          <li><strong>RGB</strong> says “how much light a screen uses.”</li>
-          <li><strong>XYZ</strong> is a “universal language” for color measurements.</li>
-          <li><strong>Lab</strong> helps describe colors in a way that matches how we *feel* differences.</li>
+          <li><strong>XYZ:</strong> a “universal” way to describe color.</li>
+          <li><strong>Lab:</strong> a way where “how far apart” colors are often matches “how different they look”.</li>
+          <li><strong>ΔE:</strong> a number that says “how different are two colors?”</li>
         </ul>
       </div>
 
       <div class="level-block level-mid">
-        <h2>Where XYZ and Lab show up</h2>
         <ul>
-          <li><strong>XYZ:</strong> a device-independent connector between systems.</li>
-          <li><strong>Lab:</strong> a space where distances can roughly match perceived differences (better than RGB).</li>
-          <li><strong>Printing:</strong> profiles often use Lab/XYZ internally to translate colors from screen → paper.</li>
+          <li>We’ll convert <strong>sRGB → linear RGB → XYZ → Lab</strong> (D65 white point).</li>
+          <li>Then we compute <strong>ΔE76</strong> between two Lab colors.</li>
         </ul>
       </div>
 
       <div class="level-block level-uni">
-        <h2>Tristimulus + reference white</h2>
         <p>
-          XYZ is tied to the CIE standard observer (color matching functions).
-          Lab is defined relative to a <strong>reference white</strong> (here we’ll use D65),
-          and applies a non-linear transform to better align with perception.
-        </p>
-        <p class="muted">
-          Lab is not perfect (and “uniformity” depends on conditions), but it’s a major step up from RGB for comparisons.
+          This uses the standard sRGB matrix and D65 white reference. ΔE76 is simple Euclidean distance in Lab;
+          better formulas exist (ΔE00), but ΔE76 is a clean first step.
         </p>
       </div>
     </section>
 
-    <!-- Try it -->
+    <!-- Interactivity AFTER explanation -->
     <section class="card" aria-label="Try it">
       <div class="section-head">
-        <h2>Try it: RGB → XYZ → Lab converter</h2>
-        <p class="muted">Pick a color, then see its XYZ and Lab values (D65, sRGB).</p>
+        <h2>Try it: Convert and compare two colors (ΔE76)</h2>
+        <p class="muted">
+          Pick Color A and Color B. We’ll compute XYZ and Lab for each, and the difference ΔE76.
+        </p>
       </div>
 
-      <div class="tryit-grid">
-        <div>
+      <div class="grid">
+        <!-- Color A -->
+        <div class="panel" aria-label="Color A panel">
+          <h3 style="margin:0 0 6px;">Color A</h3>
+          <div class="swatch" id="swA"></div>
+
           <div class="control">
-            <label for="hexIn">Hex <span class="kbd">#RRGGBB</span></label>
-            <input id="hexIn" type="text" value="#3AA7FF" autocomplete="off" spellcheck="false" />
-            <div class="hint">Try: <span class="kbd">#FF3B7A</span> or <span class="kbd">#00C2A8</span></div>
+            <label for="hexA">Hex <span class="kbd" id="hexAStatus">#—</span></label>
+            <input id="hexA" type="text" inputmode="text" spellcheck="false" value="#33A6FF" />
+            <div class="hint">Type a hex color like <span class="kbd">#FF8800</span> (3 or 6 digits).</div>
           </div>
 
           <div class="control">
-            <label for="r">Red <span class="kbd" id="rNum">—</span></label>
-            <input id="r" type="range" min="0" max="255" step="1" value="58" />
-          </div>
-          <div class="control">
-            <label for="g">Green <span class="kbd" id="gNum">—</span></label>
-            <input id="g" type="range" min="0" max="255" step="1" value="167" />
-          </div>
-          <div class="control">
-            <label for="b">Blue <span class="kbd" id="bNum">—</span></label>
-            <input id="b" type="range" min="0" max="255" step="1" value="255" />
+            <label for="rA">R <span class="kbd" id="rAVal">51</span></label>
+            <input id="rA" type="range" min="0" max="255" step="1" value="51" />
+            <label for="gA">G <span class="kbd" id="gAVal">166</span></label>
+            <input id="gA" type="range" min="0" max="255" step="1" value="166" />
+            <label for="bA">B <span class="kbd" id="bAVal">255</span></label>
+            <input id="bA" type="range" min="0" max="255" step="1" value="255" />
           </div>
 
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn btn--ghost" type="button" id="copyLabBtn">Copy Lab</button>
-            <button class="btn btn--ghost" type="button" id="randomBtn">🎲 Random</button>
-          </div>
-
-          <div class="note card card--inset" role="note" style="margin-top:12px;">
-            <div class="note__icon" aria-hidden="true">👁️</div>
-            <div>
-              <strong>Vision link:</strong> XYZ is designed so many viewing tasks can be represented with three numbers,
-              like our three-cone system.
-            </div>
-          </div>
-
-          <div class="note card card--inset" role="note">
-            <div class="note__icon" aria-hidden="true">🖨️</div>
-            <div>
-              <strong>Printing link:</strong> color management often uses XYZ/Lab to translate colors between devices
-              (monitor ↔ printer) while handling gamut limits.
-            </div>
-          </div>
+          <div class="row"><span>sRGB</span><strong class="kbd" id="rgbATxt">rgb(51, 166, 255)</strong></div>
+          <div class="row"><span>XYZ (D65)</span><strong class="kbd" id="xyzATxt">—</strong></div>
+          <div class="row"><span>Lab</span><strong class="kbd" id="labATxt">—</strong></div>
         </div>
 
-        <div>
-          <div class="panel">
-            <div class="muted" style="font-size:13px;">Selected color</div>
-            <div class="swatch" id="swatch" aria-label="Selected color swatch"></div>
-            <div class="row"><span>Hex</span><strong id="hexOut">—</strong></div>
-            <div class="row"><span>RGB</span><strong id="rgbOut">—</strong></div>
+        <!-- Color B -->
+        <div class="panel" aria-label="Color B panel">
+          <h3 style="margin:0 0 6px;">Color B</h3>
+          <div class="swatch" id="swB"></div>
+
+          <div class="control">
+            <label for="hexB">Hex <span class="kbd" id="hexBStatus">#—</span></label>
+            <input id="hexB" type="text" inputmode="text" spellcheck="false" value="#FF7A3D" />
+            <div class="hint">This is the “second color” used for ΔE. 🙂</div>
           </div>
 
-          <div class="panel" style="margin-top:12px;">
-            <table class="mini-table" aria-label="Converted values table">
-              <thead>
-                <tr><th>Space</th><th>Values</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>XYZ</strong> (D65)</td>
-                  <td><strong id="xyzOut">—</strong></td>
-                </tr>
-                <tr>
-                  <td><strong>Lab</strong> (D65)</td>
-                  <td><strong id="labOut">—</strong></td>
-                </tr>
-              </tbody>
-            </table>
-            <p class="tiny muted" style="margin-top:10px;">
-              Note: Lab depends on the reference white (we’re using D65 to match sRGB’s usual assumption).
-            </p>
+          <div class="control">
+            <label for="rB">R <span class="kbd" id="rBVal">255</span></label>
+            <input id="rB" type="range" min="0" max="255" step="1" value="255" />
+            <label for="gB">G <span class="kbd" id="gBVal">122</span></label>
+            <input id="gB" type="range" min="0" max="255" step="1" value="122" />
+            <label for="bB">B <span class="kbd" id="bBVal">61</span></label>
+            <input id="bB" type="range" min="0" max="255" step="1" value="61" />
           </div>
 
-          <div class="panel" style="margin-top:12px;">
-            <h3 class="h4" style="margin:0 0 8px;">ΔE preview (Lab distance)</h3>
-            <p class="muted" style="margin:0 0 10px;">
-              Pick a second color and compare how different it is (ΔE76).
-            </p>
-
-            <div class="two">
-              <div>
-                <div class="muted" style="font-size:13px;">Color 1 (current)</div>
-                <div class="swatch" id="sw1" aria-label="Color 1 swatch"></div>
-                <div class="row"><span>Lab</span><strong id="lab1">—</strong></div>
-              </div>
-              <div>
-                <div class="muted" style="font-size:13px;">Color 2</div>
-                <div class="swatch" id="sw2" aria-label="Color 2 swatch"></div>
-                <div class="row"><span>Hex</span><input id="hex2" type="text" value="#33FF99" /></div>
-                <div class="row"><span>Lab</span><strong id="lab2">—</strong></div>
-              </div>
-            </div>
-
-            <div style="margin-top:10px;">
-              <div class="meterline" aria-label="Difference meter"><div class="fill" id="deFill"></div></div>
-              <div class="row">
-                <span>ΔE76</span>
-                <strong id="deText">—</strong>
-              </div>
-              <div class="row">
-                <span>Interpretation (rough)</span>
-                <strong id="deHint">—</strong>
-              </div>
-            </div>
-
-            <p class="tiny muted" style="margin-top:10px;">
-              ΔE76 is a simple distance in Lab. Later we’ll cover better formulas like ΔE2000.
-            </p>
-          </div>
+          <div class="row"><span>sRGB</span><strong class="kbd" id="rgbBTxt">rgb(255, 122, 61)</strong></div>
+          <div class="row"><span>XYZ (D65)</span><strong class="kbd" id="xyzBTxt">—</strong></div>
+          <div class="row"><span>Lab</span><strong class="kbd" id="labBTxt">—</strong></div>
         </div>
       </div>
-    </section>
 
-    <section class="card" aria-label="Recap">
-      <div class="section-head">
-        <h2>What you learned</h2>
-        <p class="muted">Short recap.</p>
+      <div class="bigDE" aria-label="Delta E result">
+        <div class="row">
+          <span>ΔE76 (Lab distance)</span>
+          <strong id="deTxt">—</strong>
+        </div>
+        <div class="muted" id="deHint" style="margin-top:6px;">
+          Rule of thumb (very rough): ~1 = barely noticeable, ~2–3 = noticeable, 5+ = obvious.
+        </div>
+
+        <div class="twoBtns">
+          <button class="btn btn--ghost" type="button" id="swapBtn">🔁 Swap A ↔ B</button>
+          <button class="btn btn--ghost" type="button" id="randBBtn">🎲 Randomize B</button>
+          <button class="btn btn--primary" type="button" id="matchBtn">🎯 Make B close to A</button>
+        </div>
       </div>
-      <ul>
-        <li><strong>XYZ</strong> is a connector space tied to standard observers.</li>
-        <li><strong>Lab</strong> is more perception-friendly for comparing differences than RGB.</li>
-        <li>Printing workflows often translate colors through <strong>XYZ/Lab</strong> to manage device differences.</li>
-      </ul>
     </section>
 
     <nav class="pager" aria-label="Lesson navigation">
-      <a class="btn btn--ghost" href="./06-color-picking.html">← Previous: Color picking</a>
+      <a class="btn btn--ghost" href="./06-rgb-and-hsv.html">← Previous</a>
       <a class="btn" href="../index.html">🏠 Home</a>
-      <a class="btn btn--primary" href="./08-color-difference.html">Next: Color difference (ΔE) →</a>
+      <a class="btn btn--primary" href="./08-color-difference.html">Next →</a>
     </nav>
 
     <footer class="footer card">
       <div class="footer__row">
         <div class="footer__left">
           <div class="footer__title">Up next: Color difference</div>
-          <div class="muted">How to measure “how different” two colors look.</div>
+          <div class="muted">ΔE more deeply + why different formulas exist.</div>
         </div>
         <div class="footer__right">
           <a class="btn btn--small" href="./08-color-difference.html">Continue</a>
@@ -391,274 +300,249 @@
 
   <script src="../assets/js/app.js"></script>
   <script>
-    // ---------- Helpers ----------
-    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
-    function hex2(n){ return n.toString(16).padStart(2,"0"); }
-    function rgbToHex(r,g,b){ return ("#" + hex2(r) + hex2(g) + hex2(b)).toUpperCase(); }
-    function parseHex(str){
-      const s = str.trim();
-      const m = s.match(/^#?([0-9a-fA-F]{6})$/);
-      if (!m) return null;
-      const v = m[1];
-      return {
-        r: parseInt(v.slice(0,2),16),
-        g: parseInt(v.slice(2,4),16),
-        b: parseInt(v.slice(4,6),16),
-      };
-    }
-
-    // ---------- sRGB ↔ linear ----------
-    function srgbToLinear(c){
-      // c in [0..1]
-      return (c <= 0.04045) ? (c / 12.92) : Math.pow((c + 0.055) / 1.055, 2.4);
-    }
-    function linearToSrgb(c){
-      return (c <= 0.0031308) ? (12.92 * c) : (1.055 * Math.pow(c, 1/2.4) - 0.055);
-    }
-
-    // ---------- sRGB (D65) ↔ XYZ ----------
-    // Matrix for sRGB primaries, D65 white
-    // XYZ values returned in 0..1 scale (relative)
-    function rgbToXyz(rgb){
-      const r = srgbToLinear(rgb.r / 255);
-      const g = srgbToLinear(rgb.g / 255);
-      const b = srgbToLinear(rgb.b / 255);
-
-      // [X Y Z]^T = M * [r g b]^T
-      const X = 0.4124564*r + 0.3575761*g + 0.1804375*b;
-      const Y = 0.2126729*r + 0.7151522*g + 0.0721750*b;
-      const Z = 0.0193339*r + 0.1191920*g + 0.9503041*b;
-      return {X, Y, Z};
-    }
-
-    function xyzToRgb(xyz){
-      // inverse matrix
-      const x = xyz.X, y = xyz.Y, z = xyz.Z;
-      let r =  3.2404542*x + -1.5371385*y + -0.4985314*z;
-      let g = -0.9692660*x +  1.8760108*y +  0.0415560*z;
-      let b =  0.0556434*x + -0.2040259*y +  1.0572252*z;
-
-      r = linearToSrgb(r);
-      g = linearToSrgb(g);
-      b = linearToSrgb(b);
-
-      return {
-        r: Math.round(clamp01(r) * 255),
-        g: Math.round(clamp01(g) * 255),
-        b: Math.round(clamp01(b) * 255),
-      };
-    }
-
-    // ---------- XYZ ↔ Lab ----------
-    // Reference white for D65 (normalized to Y=1)
+    // --------- Color math (sRGB -> XYZ -> Lab), D65 white ---------
     const D65 = { Xn: 0.95047, Yn: 1.00000, Zn: 1.08883 };
+
+    function clamp255(x){ return Math.max(0, Math.min(255, x|0)); }
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+    function srgbToLinear(u){
+      u = u / 255;
+      return (u <= 0.04045) ? (u / 12.92) : Math.pow((u + 0.055) / 1.055, 2.4);
+    }
+
+    function rgbToXyz(rgb){
+      const r = srgbToLinear(rgb.r);
+      const g = srgbToLinear(rgb.g);
+      const b = srgbToLinear(rgb.b);
+      // sRGB -> XYZ (D65)
+      return {
+        X: 0.4124564*r + 0.3575761*g + 0.1804375*b,
+        Y: 0.2126729*r + 0.7151522*g + 0.0721750*b,
+        Z: 0.0193339*r + 0.1191920*g + 0.9503041*b,
+      };
+    }
 
     function fLab(t){
       const d = 6/29;
       return (t > Math.pow(d,3)) ? Math.cbrt(t) : (t/(3*d*d) + 4/29);
-    }
-    function finvLab(t){
-      const d = 6/29;
-      return (t > d) ? (t*t*t) : (3*d*d*(t - 4/29));
     }
 
     function xyzToLab(xyz){
       const xr = xyz.X / D65.Xn;
       const yr = xyz.Y / D65.Yn;
       const zr = xyz.Z / D65.Zn;
-
-      const fx = fLab(xr);
-      const fy = fLab(yr);
-      const fz = fLab(zr);
-
-      const L = 116*fy - 16;
-      const a = 500*(fx - fy);
-      const b = 200*(fy - fz);
-      return {L, a, b};
+      const fx = fLab(xr), fy = fLab(yr), fz = fLab(zr);
+      return { L: 116*fy - 16, a: 500*(fx - fy), b: 200*(fy - fz) };
     }
 
-    function labToXyz(lab){
-      const fy = (lab.L + 16) / 116;
-      const fx = fy + lab.a / 500;
-      const fz = fy - lab.b / 200;
-
-      const xr = finvLab(fx);
-      const yr = finvLab(fy);
-      const zr = finvLab(fz);
-
-      return { X: xr * D65.Xn, Y: yr * D65.Yn, Z: zr * D65.Zn };
-    }
-
-    // ΔE76
-    function deltaE76(lab1, lab2){
-      const dL = lab1.L - lab2.L;
-      const da = lab1.a - lab2.a;
-      const db = lab1.b - lab2.b;
+    function deltaE76(l1, l2){
+      const dL = l1.L - l2.L;
+      const da = l1.a - l2.a;
+      const db = l1.b - l2.b;
       return Math.sqrt(dL*dL + da*da + db*db);
     }
 
-    function deHintText(de){
-      if (de < 1) return "Barely noticeable";
-      if (de < 2) return "Small difference";
-      if (de < 5) return "Noticeable";
-      if (de < 10) return "Big difference";
-      return "Very different";
+    // --------- Hex parsing / formatting ---------
+    function hex2(n){ return n.toString(16).padStart(2, "0"); }
+
+    function rgbToHex(rgb){
+      return ("#" + hex2(rgb.r) + hex2(rgb.g) + hex2(rgb.b)).toUpperCase();
     }
 
-    // ---------- UI wiring ----------
-    const hexIn = document.getElementById("hexIn");
-    const r = document.getElementById("r");
-    const g = document.getElementById("g");
-    const b = document.getElementById("b");
-    const rNum = document.getElementById("rNum");
-    const gNum = document.getElementById("gNum");
-    const bNum = document.getElementById("bNum");
+    function parseHex(str){
+      if (!str) return null;
+      let s = String(str).trim();
+      if (s.startsWith("#")) s = s.slice(1);
+      if (s.length === 3){
+        s = s.split("").map(ch => ch + ch).join("");
+      }
+      if (!/^[0-9a-fA-F]{6}$/.test(s)) return null;
+      const r = parseInt(s.slice(0,2), 16);
+      const g = parseInt(s.slice(2,4), 16);
+      const b = parseInt(s.slice(4,6), 16);
+      return { r, g, b };
+    }
 
-    const swatch = document.getElementById("swatch");
-    const hexOut = document.getElementById("hexOut");
-    const rgbOut = document.getElementById("rgbOut");
-    const xyzOut = document.getElementById("xyzOut");
-    const labOut = document.getElementById("labOut");
+    // --------- UI wiring ---------
+    function $(id){ return document.getElementById(id); }
 
-    const randomBtn = document.getElementById("randomBtn");
-    const copyLabBtn = document.getElementById("copyLabBtn");
+    const UI = {
+      A: {
+        sw: $("swA"),
+        hex: $("hexA"),
+        hexStatus: $("hexAStatus"),
+        r: $("rA"), g: $("gA"), b: $("bA"),
+        rVal: $("rAVal"), gVal: $("gAVal"), bVal: $("bAVal"),
+        rgbTxt: $("rgbATxt"),
+        xyzTxt: $("xyzATxt"),
+        labTxt: $("labATxt"),
+      },
+      B: {
+        sw: $("swB"),
+        hex: $("hexB"),
+        hexStatus: $("hexBStatus"),
+        r: $("rB"), g: $("gB"), b: $("bB"),
+        rVal: $("rBVal"), gVal: $("gBVal"), bVal: $("bBVal"),
+        rgbTxt: $("rgbBTxt"),
+        xyzTxt: $("xyzBTxt"),
+        labTxt: $("labBTxt"),
+      },
+      deTxt: $("deTxt"),
+      deHint: $("deHint"),
+      swapBtn: $("swapBtn"),
+      randBBtn: $("randBBtn"),
+      matchBtn: $("matchBtn"),
+    };
 
-    // ΔE preview elements
-    const sw1 = document.getElementById("sw1");
-    const sw2 = document.getElementById("sw2");
-    const lab1El = document.getElementById("lab1");
-    const lab2El = document.getElementById("lab2");
-    const hex2 = document.getElementById("hex2");
-    const deFill = document.getElementById("deFill");
-    const deText = document.getElementById("deText");
-    const deHint = document.getElementById("deHint");
-
-    let suppressHex = false;
-    let suppressSliders = false;
+    const state = {
+      A: { r: 51, g: 166, b: 255 },
+      B: { r: 255, g: 122, b: 61 },
+    };
 
     function fmtXYZ(xyz){
-      // show in 0..100-ish style (common in many tools)
-      const X = (xyz.X * 100).toFixed(2);
-      const Y = (xyz.Y * 100).toFixed(2);
-      const Z = (xyz.Z * 100).toFixed(2);
-      return `X ${X}, Y ${Y}, Z ${Z}`;
+      return `X ${xyz.X.toFixed(4)}, Y ${xyz.Y.toFixed(4)}, Z ${xyz.Z.toFixed(4)}`;
     }
     function fmtLab(lab){
-      return `L ${lab.L.toFixed(2)}, a ${lab.a.toFixed(2)}, b ${lab.b.toFixed(2)}`;
+      return `L* ${lab.L.toFixed(2)}, a* ${lab.a.toFixed(2)}, b* ${lab.b.toFixed(2)}`;
     }
 
-    function setFromRgb(rgb){
-      suppressSliders = true;
-      r.value = String(rgb.r);
-      g.value = String(rgb.g);
-      b.value = String(rgb.b);
-      suppressSliders = false;
+    function setSideFromRGB(side, rgb, source=""){
+      state[side] = { r: clamp255(rgb.r), g: clamp255(rgb.g), b: clamp255(rgb.b) };
+      // push into UI
+      const S = UI[side];
+      S.r.value = String(state[side].r);
+      S.g.value = String(state[side].g);
+      S.b.value = String(state[side].b);
 
-      const hex = rgbToHex(rgb.r,rgb.g,rgb.b);
-      suppressHex = true;
-      hexIn.value = hex;
-      suppressHex = false;
+      S.rVal.textContent = String(state[side].r);
+      S.gVal.textContent = String(state[side].g);
+      S.bVal.textContent = String(state[side].b);
 
-      renderFromRgb(rgb);
+      const hx = rgbToHex(state[side]);
+      // only overwrite hex field if change wasn't caused by the user typing an invalid partial hex
+      if (source !== "hex-typing") S.hex.value = hx;
+      S.hexStatus.textContent = hx;
+
+      render();
     }
 
-    function renderFromRgb(rgb){
-      rNum.textContent = rgb.r;
-      gNum.textContent = rgb.g;
-      bNum.textContent = rgb.b;
+    function render(){
+      // A
+      for (const side of ["A","B"]){
+        const S = UI[side];
+        const rgb = state[side];
+        S.sw.style.background = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+        S.rgbTxt.textContent = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
 
-      const hex = rgbToHex(rgb.r,rgb.g,rgb.b);
-      swatch.style.background = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
-      hexOut.textContent = hex;
-      rgbOut.textContent = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-
-      const xyz = rgbToXyz(rgb);
-      const lab = xyzToLab(xyz);
-
-      xyzOut.textContent = fmtXYZ(xyz);
-      labOut.textContent = fmtLab(lab);
-
-      // ΔE preview (color 1)
-      sw1.style.background = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
-      lab1El.textContent = fmtLab(lab);
-
-      // Update ΔE (color 2)
-      renderDE();
-    }
-
-    function renderDE(){
-      const rgb1 = { r: Number(r.value), g: Number(g.value), b: Number(b.value) };
-      const c2 = parseHex(hex2.value);
-      if (!c2){
-        hex2.style.borderColor = "rgba(255, 120, 120, 0.75)";
-        return;
+        const xyz = rgbToXyz(rgb);
+        const lab = xyzToLab(xyz);
+        S.xyzTxt.textContent = fmtXYZ(xyz);
+        S.labTxt.textContent = fmtLab(lab);
+        S._lab = lab; // cache for ΔE
       }
-      hex2.style.borderColor = "rgba(255,255,255,0.14)";
 
-      sw2.style.background = `rgb(${c2.r},${c2.g},${c2.b})`;
+      const dE = deltaE76(UI.A._lab, UI.B._lab);
+      UI.deTxt.textContent = dE.toFixed(2);
 
-      const lab1 = xyzToLab(rgbToXyz(rgb1));
-      const lab2 = xyzToLab(rgbToXyz(c2));
-      lab2El.textContent = fmtLab(lab2);
-
-      const de = deltaE76(lab1, lab2);
-      deText.textContent = de.toFixed(2);
-      deHint.textContent = deHintText(de);
-
-      // Map ΔE to meter: 0..50 shown (beyond that is just "maxed")
-      const t = clamp01(de / 50);
-      deFill.style.width = (t * 100).toFixed(1) + "%";
+      // playful hint scaling
+      let hint = "Rule of thumb (very rough): ~1 barely noticeable, ~2–3 noticeable, 5+ obvious.";
+      if (dE < 1) hint = "👀 Very close: many people won’t notice a difference.";
+      else if (dE < 3) hint = "🙂 Small difference: noticeable if you compare carefully.";
+      else if (dE < 6) hint = "😮 Medium difference: most people will see it.";
+      else hint = "🚨 Big difference: clearly different colors.";
+      UI.deHint.textContent = hint;
     }
 
-    // Events
-    function onSlider(){
-      if (suppressSliders) return;
-      const rgb = { r: Number(r.value), g: Number(g.value), b: Number(b.value) };
-      const hex = rgbToHex(rgb.r,rgb.g,rgb.b);
-      suppressHex = true;
-      hexIn.value = hex;
-      suppressHex = false;
-      renderFromRgb(rgb);
-    }
-
-    function onHex(){
-      if (suppressHex) return;
-      const rgb = parseHex(hexIn.value);
-      if (!rgb){
-        hexIn.style.borderColor = "rgba(255, 120, 120, 0.75)";
-        return;
+    // Slider events
+    function wireSliders(side){
+      const S = UI[side];
+      function onAny(){
+        const rgb = { r: Number(S.r.value), g: Number(S.g.value), b: Number(S.b.value) };
+        setSideFromRGB(side, rgb);
       }
-      hexIn.style.borderColor = "rgba(255,255,255,0.14)";
-      setFromRgb(rgb);
+      S.r.addEventListener("input", onAny);
+      S.g.addEventListener("input", onAny);
+      S.b.addEventListener("input", onAny);
     }
 
-    [r,g,b].forEach(el => el.addEventListener("input", onSlider));
-    hexIn.addEventListener("input", onHex);
-    hex2.addEventListener("input", renderDE);
+    // Hex events: support partial typing, validate on blur/enter
+    function wireHex(side){
+      const S = UI[side];
 
-    randomBtn.addEventListener("click", () => {
-      const rr = Math.floor(Math.random()*256);
-      const gg = Math.floor(Math.random()*256);
-      const bb = Math.floor(Math.random()*256);
-      setFromRgb({r: rr, g: gg, b: bb});
+      function tryApplyHex(commit=false){
+        const parsed = parseHex(S.hex.value);
+        if (parsed){
+          S.hexStatus.textContent = rgbToHex(parsed);
+          if (commit){
+            setSideFromRGB(side, parsed);
+          } else {
+            // live update as you type valid full hex
+            setSideFromRGB(side, parsed, "hex-typing");
+          }
+        } else {
+          // show "invalid" lightly (don’t break anything)
+          S.hexStatus.textContent = "#invalid";
+        }
+      }
+
+      S.hex.addEventListener("input", () => tryApplyHex(false));
+      S.hex.addEventListener("change", () => tryApplyHex(true));
+      S.hex.addEventListener("keydown", (e) => {
+        if (e.key === "Enter"){
+          e.preventDefault();
+          tryApplyHex(true);
+          S.hex.blur();
+        }
+      });
+      S.hex.addEventListener("blur", () => {
+        const parsed = parseHex(S.hex.value);
+        if (parsed){
+          // normalize formatting on blur
+          setSideFromRGB(side, parsed);
+        } else {
+          // restore current valid color
+          S.hex.value = rgbToHex(state[side]);
+          S.hexStatus.textContent = rgbToHex(state[side]);
+        }
+      });
+    }
+
+    // Buttons
+    UI.swapBtn.addEventListener("click", () => {
+      const tmp = { ...state.A };
+      state.A = { ...state.B };
+      state.B = tmp;
+      setSideFromRGB("A", state.A);
+      setSideFromRGB("B", state.B);
     });
 
-    copyLabBtn.addEventListener("click", async () => {
-      try{
-        const rgb = { r: Number(r.value), g: Number(g.value), b: Number(b.value) };
-        const lab = xyzToLab(rgbToXyz(rgb));
-        await navigator.clipboard.writeText(fmtLab(lab));
-        copyLabBtn.textContent = "Copied!";
-        setTimeout(() => copyLabBtn.textContent = "Copy Lab", 900);
-      }catch(_){
-        copyLabBtn.textContent = "Copy failed";
-        setTimeout(() => copyLabBtn.textContent = "Copy Lab", 900);
-      }
+    UI.randBBtn.addEventListener("click", () => {
+      const rgb = {
+        r: Math.floor(Math.random()*256),
+        g: Math.floor(Math.random()*256),
+        b: Math.floor(Math.random()*256),
+      };
+      setSideFromRGB("B", rgb);
     });
 
-    // Init
-    onHex(); // sync everything from default hex
-    renderDE();
+    UI.matchBtn.addEventListener("click", () => {
+      // Make B close to A by small random perturbation
+      const a = state.A;
+      const rgb = {
+        r: clamp255(a.r + Math.floor((Math.random()*21)-10)),
+        g: clamp255(a.g + Math.floor((Math.random()*21)-10)),
+        b: clamp255(a.b + Math.floor((Math.random()*21)-10)),
+      };
+      setSideFromRGB("B", rgb);
+    });
+
+    // init wiring + initial render
+    wireSliders("A"); wireSliders("B");
+    wireHex("A"); wireHex("B");
+
+    setSideFromRGB("A", state.A);
+    setSideFromRGB("B", state.B);
   </script>
 </body>
 </html>
