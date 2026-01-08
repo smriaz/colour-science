@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Glossary • Color Lab</title>
+  <meta name="description" content="A playful glossary of key color science terms with quick interactive checks." />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+
+  <style>
+    .crumbs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; color: var(--muted); font-size: 13px; }
+    .crumbs a{ color: var(--text); text-decoration:none; }
+    .crumbs a:hover{ text-decoration: underline; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
+
+    .panel{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+
+    .searchRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top: 10px;
+    }
+    .searchRow input{
+      flex: 1 1 260px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      padding: 10px 12px;
+      outline: none;
+    }
+    .searchRow input:focus{
+      border-color: rgba(124,247,212,0.55);
+      box-shadow: 0 0 0 3px rgba(124,247,212,0.15);
+    }
+
+    .tags{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    .chip{
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-weight: 900;
+      font-size: 13px;
+      padding: 6px 10px;
+      cursor:pointer;
+    }
+    .chip[aria-pressed="true"]{
+      background: rgba(124,247,212,0.14);
+      border-color: rgba(124,247,212,0.55);
+    }
+
+    details.term{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+      margin-top: 10px;
+    }
+    details.term summary{
+      cursor:pointer;
+      font-weight: 950;
+      color: var(--text);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:baseline;
+    }
+    .meta{
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .def{
+      color: var(--muted);
+      margin: 10px 0 0;
+      line-height: 1.5;
+    }
+    .links{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .callout{
+      border-left: 4px solid rgba(255,211,107,0.70);
+      padding: 12px 14px;
+      background: rgba(255,211,107,0.10);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      margin-top: 12px;
+    }
+
+    .quizBox{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.12);
+      padding: 12px;
+      margin-top: 12px;
+    }
+    .quizPrompt{
+      color: var(--muted);
+      margin: 6px 0 0;
+    }
+    .choices{
+      display:grid;
+      gap:10px;
+      margin-top: 10px;
+    }
+    .choice{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+      cursor:pointer;
+      text-align:left;
+      color: var(--text);
+      font-weight: 900;
+    }
+    .choice:hover{ background: rgba(255,255,255,0.09); }
+    .choice[disabled]{ opacity: 0.65; cursor:not-allowed; }
+    .result{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .result.ok{ background: rgba(124,247,212,0.12); }
+    .result.bad{ background: rgba(255,120,120,0.12); }
+
+    .row{
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .pager{
+      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+      margin-top:  12px;
+    }
+    .pager .btn{ min-width: 160px; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Interactive color science</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="../index.html">Home</a>
+        <a class="nav__link" href="./glossary.html" aria-current="page">Glossary</a>
+        <a class="nav__link" href="./about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span aria-hidden="true">›</span>
+      <strong>Glossary</strong>
+    </div>
+
+    <section class="card">
+      <h1>Glossary</h1>
+      <p class="lead">
+        A handy list of color science terms used across this tutorial — with a tiny “check yourself” game.
+      </p>
+
+      <div class="callout" role="note">
+        <strong>How to use:</strong> search a word, filter by topic, then open the term.
+        If you get lost in a lesson, jump here and come back.
+      </div>
+
+      <div class="searchRow" role="search" aria-label="Search glossary">
+        <input id="q" type="search" placeholder="Search terms (e.g., gamut, metamerism, ΔE, CMYK…)" autocomplete="off" />
+        <button class="btn btn--ghost" type="button" id="clearBtn">Clear</button>
+      </div>
+
+      <div class="tags" aria-label="Topic filters">
+        <button class="chip" type="button" data-tag="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-tag="vision" aria-pressed="false">Vision</button>
+        <button class="chip" type="button" data-tag="colorimetry" aria-pressed="false">Colorimetry</button>
+        <button class="chip" type="button" data-tag="printing" aria-pressed="false">Printing</button>
+        <button class="chip" type="button" data-tag="practical" aria-pressed="false">Practical</button>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Glossary content">
+      <div class="grid">
+        <div class="panel">
+          <h2 style="margin:0 0 6px;">Terms</h2>
+          <p class="muted" style="margin:0;">Open a term to see a short definition + “where it appears” in the tutorial.</p>
+          <div id="termList" aria-label="Glossary term list"></div>
+
+          <div class="row">
+            <span>Showing</span>
+            <strong class="kbd"><span id="shown">0</span> terms</strong>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2 style="margin:0 0 6px;">Quick check game</h2>
+          <p class="muted" style="margin:0;">
+            Pick the best meaning. (It’s okay to guess — the explanation teaches.)
+          </p>
+
+          <div class="quizBox" aria-label="Glossary quiz">
+            <div class="row">
+              <span><strong id="quizTerm">—</strong></span>
+              <strong class="kbd">Round <span id="roundNum">1</span></strong>
+            </div>
+            <p class="quizPrompt" id="quizPrompt">—</p>
+
+            <div class="choices" id="quizChoices"></div>
+            <div id="quizResult" class="result" role="status" aria-live="polite" hidden></div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+              <button class="btn btn--primary" type="button" id="nextQuizBtn">Next term →</button>
+              <button class="btn btn--ghost" type="button" id="revealBtn">Reveal definition</button>
+            </div>
+          </div>
+
+          <div class="callout" role="note">
+            <strong>Design tip:</strong> In real work, avoid relying on jargon. Use short definitions like these.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="pager" aria-label="Page navigation">
+      <a class="btn btn--ghost" href="../index.html">← Back to Home</a>
+      <a class="btn btn--primary" href="./about.html">Next: About →</a>
+    </nav>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">Keep going</div>
+          <div class="muted">Glossary + About make the site feel “complete” and reduce confusion.</div>
+        </div>
+        <div class="footer__right">
+          <a class="btn btn--small" href="./about.html">About</a>
+        </div>
+      </div>
+      <div class="tiny muted">Level setting is saved only in your browser (no account, no tracking).</div>
+    </footer>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    // ---------- Data ----------
+    const TERMS = [
+      {
+        term: "Additive mixing",
+        tags: ["colorimetry","practical"],
+        def: "Mixing by adding light. On screens, more R/G/B usually means a brighter result.",
+        where: "RGB pages + mixing demos (early lessons).",
+      },
+      {
+        term: "Subtractive mixing",
+        tags: ["printing","practical"],
+        def: "Mixing by removing (absorbing) parts of light using inks or pigments. More ink often means darker results.",
+        where: "CMYK & printing (10).",
+      },
+      {
+        term: "RGB",
+        tags: ["colorimetry","practical"],
+        def: "A device-oriented model where colors are specified by Red, Green, Blue channel values. Common for displays.",
+        where: "Fundamentals + conversions.",
+      },
+      {
+        term: "CMYK",
+        tags: ["printing","practical"],
+        def: "A printing-oriented model: Cyan, Magenta, Yellow, and Key (black). It’s device-dependent and tied to inks/paper.",
+        where: "CMYK & printing (10).",
+      },
+      {
+        term: "HSV / HSL",
+        tags: ["colorimetry","practical"],
+        def: "Convenient ways to describe colors with Hue, Saturation, and Value/Lightness. Useful for UI, not perceptually uniform.",
+        where: "Models and conversions.",
+      },
+      {
+        term: "Trichromacy",
+        tags: ["vision"],
+        def: "Humans typically have three cone types (L/M/S). Many color models are built around this fact.",
+        where: "Vision fundamentals.",
+      },
+      {
+        term: "Opponent channels",
+        tags: ["vision"],
+        def: "A way the visual system encodes color differences (roughly red–green, blue–yellow, and light–dark).",
+        where: "Vision fundamentals + constancy.",
+      },
+      {
+        term: "Illuminant",
+        tags: ["vision","colorimetry","printing"],
+        def: "The light source spectrum shining on objects (e.g., daylight vs tungsten). It changes the light reaching your eyes/sensor.",
+        where: "Constancy + Lab/XYZ discussions.",
+      },
+      {
+        term: "White balance",
+        tags: ["vision","practical"],
+        def: "A camera/display adjustment that aims to make neutral surfaces look neutral under different lighting.",
+        where: "Applications (12).",
+      },
+      {
+        term: "XYZ",
+        tags: ["colorimetry"],
+        def: "A standard colorimetric space (CIE) that represents colors using three tristimulus values. Often a hub for conversions.",
+        where: "Conversion and measurement lessons.",
+      },
+      {
+        term: "Chromaticity",
+        tags: ["colorimetry"],
+        def: "A 2D description of color quality independent of overall brightness (e.g., x,y). Often used to show display gamuts.",
+        where: "Gamut (11).",
+      },
+      {
+        term: "Lab (CIELAB)",
+        tags: ["colorimetry","printing"],
+        def: "A perceptual-ish color space (L*, a*, b*) designed so distances relate more to perceived differences (compared to RGB).",
+        where: "ΔE + printing workflows.",
+      },
+      {
+        term: "ΔE (Delta E)",
+        tags: ["colorimetry","printing"],
+        def: "A numerical measure of color difference. Smaller is closer. Different formulas exist (ΔE76, ΔE94, ΔE00).",
+        where: "Color difference + QA.",
+      },
+      {
+        term: "Metamerism",
+        tags: ["vision","printing"],
+        def: "Two samples can match under one illuminant/observer but not another because their spectra differ.",
+        where: "Matching and printing discussions.",
+      },
+      {
+        term: "ICC profile",
+        tags: ["printing","practical"],
+        def: "A file describing how a device reproduces color, enabling conversions between devices through a common reference space.",
+        where: "Printing workflow (10–12) and resources.",
+      },
+      {
+        term: "Rendering intent",
+        tags: ["printing"],
+        def: "A strategy for mapping out-of-gamut colors when converting between gamuts (e.g., perceptual vs relative colorimetric).",
+        where: "Gamut & proofing (11–12).",
+      },
+      {
+        term: "Gamut",
+        tags: ["colorimetry","printing","practical"],
+        def: "The set of colors a device can produce (display) or reproduce (printer). Some colors can be out-of-gamut.",
+        where: "Gamut lesson (11).",
+      },
+      {
+        term: "Soft proof",
+        tags: ["printing","practical"],
+        def: "A screen simulation of how a print will look using a printer/paper profile under assumed viewing conditions.",
+        where: "Applications + resources.",
+      },
+      {
+        term: "Dot gain (TVI)",
+        tags: ["printing"],
+        def: "In printing, dots can appear larger on paper than intended, changing tone and color. Important for press calibration.",
+        where: "Printing realities + QA.",
+      },
+      {
+        term: "Observer",
+        tags: ["vision","colorimetry"],
+        def: "A standard observer represents average human color matching data (e.g., 2° or 10°). Real people vary.",
+        where: "Colorimetry/standards context.",
+      },
+    ];
+
+    // ---------- DOM ----------
+    const listEl = document.getElementById("termList");
+    const shownEl = document.getElementById("shown");
+    const qInput = document.getElementById("q");
+    const clearBtn = document.getElementById("clearBtn");
+    const chips = Array.from(document.querySelectorAll(".chip"));
+
+    const quizTerm = document.getElementById("quizTerm");
+    const quizPrompt = document.getElementById("quizPrompt");
+    const quizChoices = document.getElementById("quizChoices");
+    const quizResult = document.getElementById("quizResult");
+    const nextQuizBtn = document.getElementById("nextQuizBtn");
+    const revealBtn = document.getElementById("revealBtn");
+    const roundNum = document.getElementById("roundNum");
+
+    // ---------- Filter state ----------
+    let activeTag = "all";
+    let query = "";
+
+    function norm(s){ return String(s).toLowerCase().trim(); }
+
+    function matches(t){
+      const q = norm(query);
+      const hay = norm(t.term + " " + t.def + " " + t.where);
+      const okQuery = !q || hay.includes(q) || (q === "de" && t.term.includes("ΔE"));
+      const okTag = (activeTag === "all") || t.tags.includes(activeTag);
+      return okQuery && okTag;
+    }
+
+    function renderList(){
+      listEl.innerHTML = "";
+      const items = TERMS.filter(matches).sort((a,b) => a.term.localeCompare(b.term));
+
+      items.forEach(t => {
+        const d = document.createElement("details");
+        d.className = "term";
+        d.dataset.tags = t.tags.join(",");
+        d.innerHTML = `
+          <summary>
+            <span>${t.term}</span>
+            <span class="meta">${t.tags.join(" · ")}</span>
+          </summary>
+          <p class="def">${t.def}</p>
+          <div class="links">
+            <span class="kbd">Where: ${t.where}</span>
+          </div>
+        `;
+        listEl.appendChild(d);
+      });
+
+      shownEl.textContent = String(items.length);
+      if (items.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "callout";
+        empty.innerHTML = `<strong>No matches.</strong> Try a shorter search (e.g., "gamut") or switch the filter to <span class="kbd">All</span>.`;
+        listEl.appendChild(empty);
+      }
+    }
+
+    chips.forEach(c => {
+      c.addEventListener("click", () => {
+        chips.forEach(x => x.setAttribute("aria-pressed","false"));
+        c.setAttribute("aria-pressed","true");
+        activeTag = c.dataset.tag;
+        renderList();
+      });
+    });
+
+    qInput.addEventListener("input", () => {
+      query = qInput.value;
+      renderList();
+    });
+
+    clearBtn.addEventListener("click", () => {
+      query = "";
+      qInput.value = "";
+      activeTag = "all";
+      chips.forEach(x => x.setAttribute("aria-pressed", String(x.dataset.tag==="all")));
+      renderList();
+    });
+
+    // ---------- Quiz ----------
+    let round = 1;
+    let current = null;
+    let locked = false;
+
+    function shuffle(arr){
+      const a = arr.slice();
+      for (let i=a.length-1; i>0; i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a;
+    }
+
+    function pickTerm(){
+      // bias toward currently visible set if any, else use all
+      const visible = TERMS.filter(matches);
+      const pool = visible.length ? visible : TERMS;
+      return pool[Math.floor(Math.random()*pool.length)];
+    }
+
+    function makeChoicesFor(termObj){
+      // correct definition + two distractors
+      const others = shuffle(TERMS.filter(t => t.term !== termObj.term)).slice(0,2);
+      const ch = shuffle([
+        {t: termObj.def, ok:true},
+        {t: others[0].def, ok:false},
+        {t: others[1].def, ok:false},
+      ]);
+      return ch;
+    }
+
+    function renderQuiz(){
+      locked = false;
+      quizResult.hidden = true;
+      quizResult.className = "result";
+      quizResult.textContent = "";
+      quizChoices.innerHTML = "";
+
+      current = pickTerm();
+      const choices = makeChoicesFor(current);
+
+      quizTerm.textContent = current.term;
+      quizPrompt.textContent = "Pick the best definition:";
+      roundNum.textContent = String(round);
+
+      choices.forEach(ch => {
+        const b = document.createElement("button");
+        b.className = "choice";
+        b.type = "button";
+        b.textContent = ch.t;
+        b.addEventListener("click", () => answerQuiz(ch, choices));
+        quizChoices.appendChild(b);
+      });
+    }
+
+    function setDisabledAll(v){
+      Array.from(quizChoices.querySelectorAll("button.choice")).forEach(b => b.disabled = v);
+    }
+
+    function answerQuiz(ch, choices){
+      if (locked) return;
+      locked = true;
+      setDisabledAll(true);
+
+      const correct = choices.find(x => x.ok);
+      if (ch.ok){
+        quizResult.hidden = false;
+        quizResult.classList.add("ok");
+        quizResult.innerHTML = `<strong>✅ Nice.</strong> <span class="muted">That’s the gist.</span>`;
+      } else {
+        quizResult.hidden = false;
+        quizResult.classList.add("bad");
+        quizResult.innerHTML = `<strong>❌ Close-ish.</strong> <span class="muted">Best definition:</span><div style="margin-top:8px;" class="kbd">${correct.t}</div>`;
+      }
+    }
+
+    nextQuizBtn.addEventListener("click", () => {
+      round++;
+      renderQuiz();
+    });
+
+    revealBtn.addEventListener("click", () => {
+      if (!current) return;
+      quizResult.hidden = false;
+      quizResult.className = "result ok";
+      quizResult.innerHTML = `<strong>Definition:</strong> <span class="muted">${current.def}</span><div class="row"><span>Where</span><strong class="kbd">${current.where}</strong></div>`;
+      setDisabledAll(true);
+      locked = true;
+    });
+
+    // init
+    renderList();
+    renderQuiz();
+  </script>
+</body>
+</html>
