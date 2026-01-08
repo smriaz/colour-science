@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>06 — Color Picking (Hex, RGB, HSL) • Color Lab</title>
+  <meta name="description" content="Learn hex codes, RGB, and HSL. Interactive color picker with conversions and a playful 'name that color' mini-game." />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+
+  <style>
+    .crumbs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; color: var(--muted); font-size: 13px; }
+    .crumbs a{ color: var(--text); text-decoration:none; }
+    .crumbs a:hover{ text-decoration: underline; }
+
+    .lesson-head{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
+    .lesson-head .seg{ max-width: 520px; width: 100%; }
+
+    .level-block{ display:none; }
+    html[data-level="kids"] .level-kids{ display:block; }
+    html[data-level="mid"]  .level-mid{ display:block; }
+    html[data-level="uni"]  .level-uni{ display:block; }
+
+    .callout{
+      border-left: 4px solid rgba(167,139,250,0.65);
+      padding: 12px 14px;
+      background: rgba(167,139,250,0.10);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .tryit-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .tryit-grid{ grid-template-columns: 1fr; }
+    }
+
+    .control{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      margin-bottom: 10px;
+    }
+    .control label{ font-weight: 850; display:flex; justify-content:space-between; gap:10px; }
+    .control input[type="range"], .control input[type="text"]{ width:100%; }
+    .control .hint{ font-size: 12.5px; color: var(--muted); }
+
+    .panel{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+
+    .swatch{
+      height: 170px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #222;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
+    }
+
+    .row{
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    input[type="text"]{
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      outline: none;
+    }
+    input[type="text"]:focus{
+      border-color: rgba(124,247,212,0.55);
+      box-shadow: 0 0 0 4px rgba(124,247,212,0.12);
+    }
+
+    .two{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 640px){
+      .two{ grid-template-columns: 1fr; }
+    }
+
+    .chiprow{
+      display:flex; flex-wrap:wrap; gap:8px; margin-top: 10px;
+    }
+    .chipbtn{
+      display:flex; align-items:center; gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      cursor:pointer;
+      font-weight: 700;
+    }
+    .chipbtn:hover{ background: rgba(255,255,255,0.09); }
+    .dot{
+      width: 14px; height: 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #444;
+    }
+
+    .note{ display:flex; gap:12px; align-items:flex-start; }
+    .note__icon{ font-size: 20px; }
+
+    .game{
+      margin-top: 12px;
+      display:grid;
+      gap: 10px;
+    }
+    .choices{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 520px){
+      .choices{ grid-template-columns: 1fr; }
+    }
+    .choice{
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      cursor:pointer;
+      font-weight: 800;
+      text-align:left;
+    }
+    .choice:hover{ background: rgba(255,255,255,0.09); }
+    .result{
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,211,107,0.10);
+      color: var(--text);
+    }
+
+    .pager{
+      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .pager .btn{ min-width: 160px; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Interactive color science</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="../index.html">Home</a>
+        <a class="nav__link" href="./glossary.html">Glossary</a>
+        <a class="nav__link" href="./about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span aria-hidden="true">›</span>
+      <span>Module B — Digital color</span>
+      <span aria-hidden="true">›</span>
+      <strong>06 — Color picking</strong>
+    </div>
+
+    <section class="card">
+      <div class="lesson-head">
+        <div>
+          <h1>06 — Color picking (Hex, RGB, HSL)</h1>
+          <p class="lead">
+            Designers and coders often describe colors with <strong>hex</strong> (like <span class="kbd">#FF8800</span>),
+            or with models like <strong>RGB</strong> and <strong>HSL</strong>.
+          </p>
+        </div>
+
+        <div aria-label="Difficulty level">
+          <div class="seg" role="group" aria-label="Difficulty toggle">
+            <button class="seg__btn" type="button" data-level="kids" aria-pressed="true">Kids / Beginner</button>
+            <button class="seg__btn" type="button" data-level="mid" aria-pressed="false">Intermediate</button>
+            <button class="seg__btn" type="button" data-level="uni" aria-pressed="false">University</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" role="note">
+        <strong>Big idea:</strong> RGB is great for screens, but HSL is great for humans:
+        <em>hue</em> (color name-ish), <em>saturation</em> (how colorful), <em>lightness</em> (how bright).
+      </div>
+
+      <div class="level-block level-kids">
+        <h2>Three ways to say a color</h2>
+        <ul>
+          <li><strong>RGB:</strong> how much Red, Green, Blue light</li>
+          <li><strong>Hex:</strong> RGB written in a short code</li>
+          <li><strong>HSL:</strong> hue + how colorful + how light/dark</li>
+        </ul>
+      </div>
+
+      <div class="level-block level-mid">
+        <h2>Hex is just RGB in base-16</h2>
+        <p>
+          <span class="kbd">#RRGGBB</span> is three numbers written in hex. For example:
+          <span class="kbd">#FF0000</span> = red, <span class="kbd">#00FF00</span> = green, <span class="kbd">#0000FF</span> = blue.
+        </p>
+      </div>
+
+      <div class="level-block level-uni">
+        <h2>HSL is not perceptually uniform</h2>
+        <p>
+          HSL/HSV are convenient, but equal steps do not correspond to equal perceived differences.
+          Later we’ll use more perceptual spaces (Lab) and proper differences (ΔE).
+        </p>
+        <p class="muted">
+          Still, HSL is useful for UI controls and for talking about “hue” and “lightness” intuitively.
+        </p>
+      </div>
+    </section>
+
+    <!-- Try it -->
+    <section class="card" aria-label="Try it">
+      <div class="section-head">
+        <h2>Try it: A friendly color picker</h2>
+        <p class="muted">Change HSL sliders, and see Hex + RGB update instantly.</p>
+      </div>
+
+      <div class="tryit-grid">
+        <div>
+          <div class="control">
+            <label for="h">Hue (0–360) <span class="kbd" id="hNum">25</span></label>
+            <input id="h" type="range" min="0" max="360" step="1" value="25" />
+            <div class="hint">Hue is the “color family” (red → yellow → green → blue → back to red).</div>
+          </div>
+
+          <div class="control">
+            <label for="s">Saturation (0–100%) <span class="kbd" id="sNum">90%</span></label>
+            <input id="s" type="range" min="0" max="100" step="1" value="90" />
+            <div class="hint">0% saturation is gray. Higher is more “colorful.”</div>
+          </div>
+
+          <div class="control">
+            <label for="l">Lightness (0–100%) <span class="kbd" id="lNum">55%</span></label>
+            <input id="l" type="range" min="0" max="100" step="1" value="55" />
+            <div class="hint">Lightness changes how dark/bright it looks.</div>
+          </div>
+
+          <div class="control">
+            <label for="hexIn">Hex (type here) <span class="kbd">#RRGGBB</span></label>
+            <input id="hexIn" type="text" value="#F57A1A" inputmode="text" autocomplete="off" spellcheck="false" />
+            <div class="hint">Try: <span class="kbd">#00AEEF</span> or <span class="kbd">#FFEE00</span></div>
+          </div>
+
+          <div class="chiprow" aria-label="Quick picks">
+            <button class="chipbtn" type="button" data-hex="#FF4D4D"><span class="dot" style="background:#FF4D4D"></span> Watermelon</button>
+            <button class="chipbtn" type="button" data-hex="#00C2A8"><span class="dot" style="background:#00C2A8"></span> Seafoam</button>
+            <button class="chipbtn" type="button" data-hex="#6E4BFF"><span class="dot" style="background:#6E4BFF"></span> Grape</button>
+            <button class="chipbtn" type="button" data-hex="#FFD36B"><span class="dot" style="background:#FFD36B"></span> Sunshine</button>
+            <button class="chipbtn" type="button" id="randomBtn"><span class="dot" style="background:rgba(255,255,255,0.8)"></span> Random</button>
+          </div>
+
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">👁️</div>
+            <div>
+              <strong>Vision link:</strong> “Hue” is related to how opponent channels compare cone signals,
+              but it’s not a direct physical wavelength.
+            </div>
+          </div>
+
+          <div class="note card card--inset" role="note">
+            <div class="note__icon" aria-hidden="true">🖨️</div>
+            <div>
+              <strong>Printing preview:</strong> A bright on-screen color may be outside a printer’s gamut.
+              Later we’ll talk about gamuts and why some colors can’t be printed.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="muted" style="font-size:13px;">Selected color</div>
+            <div class="swatch" id="swatch" aria-label="Selected color swatch"></div>
+
+            <div class="two" style="margin-top:12px;">
+              <div class="panel">
+                <div class="muted" style="font-size:13px;">Hex</div>
+                <div class="kbd" id="hexOut">#F57A1A</div>
+                <div class="row"><span>Copy</span><button class="btn btn--ghost" type="button" id="copyHexBtn">Copy hex</button></div>
+              </div>
+              <div class="panel">
+                <div class="muted" style="font-size:13px;">RGB</div>
+                <div class="kbd" id="rgbOut">rgb(245, 122, 26)</div>
+                <div class="row"><span>HSL</span><strong id="hslOut">hsl(25, 90%, 55%)</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <section class="panel game" aria-label="Mini game" style="margin-top:12px;">
+            <h3 class="h4" style="margin:0;">Mini-game: Name that color 🎭</h3>
+            <p class="muted" style="margin:6px 0 0;">
+              A random color appears. Choose the best “family” name.
+            </p>
+
+            <div class="swatch" id="gameSwatch" aria-label="Game color swatch" style="margin-top:10px;"></div>
+
+            <div class="choices" style="margin-top:10px;" id="choices"></div>
+
+            <div class="result" id="gameResult" role="status" aria-live="polite" hidden></div>
+
+            <button class="btn btn--primary" type="button" id="newGameBtn">New color</button>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Recap">
+      <div class="section-head">
+        <h2>What you learned</h2>
+        <p class="muted">Short recap.</p>
+      </div>
+      <ul>
+        <li><span class="kbd">#RRGGBB</span> is just RGB written in hexadecimal.</li>
+        <li>HSL is a convenient “human-ish” way to control colors in UIs.</li>
+        <li>Not all spaces are good for all tasks — later we’ll use XYZ/Lab for deeper science.</li>
+      </ul>
+    </section>
+
+    <nav class="pager" aria-label="Lesson navigation">
+      <a class="btn btn--ghost" href="./05-gamma-and-linear.html">← Previous: Gamma & linear</a>
+      <a class="btn" href="../index.html">🏠 Home</a>
+      <a class="btn btn--primary" href="./07-xyz-and-lab.html">Next: CIEXYZ & Lab →</a>
+    </nav>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">Up next: CIEXYZ & Lab</div>
+          <div class="muted">A bridge from perception to measurement (and printing workflows).</div>
+        </div>
+        <div class="footer__right">
+          <a class="btn btn--small" href="./07-xyz-and-lab.html">Continue</a>
+        </div>
+      </div>
+      <div class="tiny muted">Level setting is saved only in your browser (no account, no tracking).</div>
+    </footer>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    // ---------- Conversions ----------
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+    function hex2(n){ return n.toString(16).padStart(2,"0"); }
+    function rgbToHex(r,g,b){ return ("#" + hex2(r) + hex2(g) + hex2(b)).toUpperCase(); }
+
+    function parseHex(str){
+      const s = str.trim();
+      const m = s.match(/^#?([0-9a-fA-F]{6})$/);
+      if (!m) return null;
+      const v = m[1];
+      const r = parseInt(v.slice(0,2),16);
+      const g = parseInt(v.slice(2,4),16);
+      const b = parseInt(v.slice(4,6),16);
+      return {r,g,b};
+    }
+
+    function hslToRgb(h,s,l){
+      // h in [0..360], s/l in [0..1]
+      h = ((h%360)+360)%360;
+      const c = (1 - Math.abs(2*l - 1)) * s;
+      const hp = h / 60;
+      const x = c * (1 - Math.abs((hp % 2) - 1));
+      let r1=0,g1=0,b1=0;
+      if (0 <= hp && hp < 1) { r1=c; g1=x; b1=0; }
+      else if (1 <= hp && hp < 2) { r1=x; g1=c; b1=0; }
+      else if (2 <= hp && hp < 3) { r1=0; g1=c; b1=x; }
+      else if (3 <= hp && hp < 4) { r1=0; g1=x; b1=c; }
+      else if (4 <= hp && hp < 5) { r1=x; g1=0; b1=c; }
+      else { r1=c; g1=0; b1=x; }
+      const m = l - c/2;
+      return {
+        r: Math.round((r1+m)*255),
+        g: Math.round((g1+m)*255),
+        b: Math.round((b1+m)*255),
+      };
+    }
+
+    function rgbToHsl(r,g,b){
+      r/=255; g/=255; b/=255;
+      const max = Math.max(r,g,b), min = Math.min(r,g,b);
+      const d = max - min;
+      let h = 0;
+      if (d === 0) h = 0;
+      else if (max === r) h = 60 * (((g-b)/d) % 6);
+      else if (max === g) h = 60 * (((b-r)/d) + 2);
+      else h = 60 * (((r-g)/d) + 4);
+      if (h < 0) h += 360;
+
+      const l = (max + min) / 2;
+      const s = (d === 0) ? 0 : d / (1 - Math.abs(2*l - 1));
+      return {h, s, l};
+    }
+
+    // ---------- UI elements ----------
+    const h = document.getElementById("h");
+    const s = document.getElementById("s");
+    const l = document.getElementById("l");
+    const hNum = document.getElementById("hNum");
+    const sNum = document.getElementById("sNum");
+    const lNum = document.getElementById("lNum");
+
+    const hexIn = document.getElementById("hexIn");
+    const swatch = document.getElementById("swatch");
+    const hexOut = document.getElementById("hexOut");
+    const rgbOut = document.getElementById("rgbOut");
+    const hslOut = document.getElementById("hslOut");
+
+    const copyHexBtn = document.getElementById("copyHexBtn");
+    const randomBtn = document.getElementById("randomBtn");
+
+    let suppressHexUpdate = false;
+    let suppressSliderUpdate = false;
+
+    function setFromHsl(){
+      if (suppressSliderUpdate) return;
+      const H = Number(h.value);
+      const S = Number(s.value)/100;
+      const L = Number(l.value)/100;
+
+      const rgb = hslToRgb(H,S,L);
+      const hex = rgbToHex(rgb.r,rgb.g,rgb.b);
+
+      updateOutputs(rgb, {h:H, s:S, l:L});
+
+      suppressHexUpdate = true;
+      hexIn.value = hex;
+      suppressHexUpdate = false;
+    }
+
+    function setFromHex(){
+      if (suppressHexUpdate) return;
+      const rgb = parseHex(hexIn.value);
+      if (!rgb){
+        hexIn.style.borderColor = "rgba(255, 120, 120, 0.75)";
+        return;
+      }
+      hexIn.style.borderColor = "rgba(255,255,255,0.14)";
+      const hsl = rgbToHsl(rgb.r,rgb.g,rgb.b);
+
+      suppressSliderUpdate = true;
+      h.value = String(Math.round(hsl.h));
+      s.value = String(Math.round(hsl.s*100));
+      l.value = String(Math.round(hsl.l*100));
+      suppressSliderUpdate = false;
+
+      updateOutputs(rgb, {h:hsl.h, s:hsl.s, l:hsl.l});
+    }
+
+    function updateOutputs(rgb, hsl){
+      hNum.textContent = Math.round(((hsl.h%360)+360)%360);
+      sNum.textContent = Math.round(hsl.s*100) + "%";
+      lNum.textContent = Math.round(hsl.l*100) + "%";
+
+      const hex = rgbToHex(rgb.r,rgb.g,rgb.b);
+      swatch.style.background = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+      hexOut.textContent = hex;
+      rgbOut.textContent = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+      hslOut.textContent = `hsl(${Math.round(((hsl.h%360)+360)%360)}, ${Math.round(hsl.s*100)}%, ${Math.round(hsl.l*100)}%)`;
+    }
+
+    // Quick pick chips
+    document.querySelectorAll("[data-hex]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        hexIn.value = btn.getAttribute("data-hex");
+        setFromHex();
+      });
+    });
+
+    randomBtn.addEventListener("click", () => {
+      const r = Math.floor(Math.random()*256);
+      const g = Math.floor(Math.random()*256);
+      const b = Math.floor(Math.random()*256);
+      hexIn.value = rgbToHex(r,g,b);
+      setFromHex();
+    });
+
+    copyHexBtn.addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(hexOut.textContent);
+        copyHexBtn.textContent = "Copied!";
+        setTimeout(() => copyHexBtn.textContent = "Copy hex", 900);
+      }catch(_){
+        copyHexBtn.textContent = "Copy failed";
+        setTimeout(() => copyHexBtn.textContent = "Copy hex", 900);
+      }
+    });
+
+    [h,s,l].forEach(el => el.addEventListener("input", setFromHsl));
+    hexIn.addEventListener("input", setFromHex);
+
+    // ---------- Mini-game: Name that color ----------
+    const gameSwatch = document.getElementById("gameSwatch");
+    const choices = document.getElementById("choices");
+    const gameResult = document.getElementById("gameResult");
+    const newGameBtn = document.getElementById("newGameBtn");
+
+    const families = [
+      {key:"red", label:"Red / Pink"},
+      {key:"orange", label:"Orange"},
+      {key:"yellow", label:"Yellow"},
+      {key:"green", label:"Green"},
+      {key:"cyan", label:"Cyan / Teal"},
+      {key:"blue", label:"Blue"},
+      {key:"purple", label:"Purple"},
+      {key:"gray", label:"Gray / Brown"},
+    ];
+
+    function familyFromHsl(h,s,l){
+      // Very rough rule-based naming
+      if (s < 0.12 || l < 0.12 || l > 0.92) return "gray"; // near grayscale or near extremes
+      const H = ((h%360)+360)%360;
+      if (H < 20 || H >= 340) return "red";
+      if (H < 45) return "orange";
+      if (H < 75) return "yellow";
+      if (H < 155) return "green";
+      if (H < 200) return "cyan";
+      if (H < 255) return "blue";
+      return "purple";
+    }
+
+    function sampleRandomColor(){
+      // Keep it fun: avoid too dark/too light extremes
+      const H = Math.random()*360;
+      const S = 0.35 + Math.random()*0.60;
+      const L = 0.28 + Math.random()*0.55;
+      return {h:H, s:S, l:L};
+    }
+
+    function pickChoices(correctKey){
+      const pool = families.map(f => f.key).filter(k => k !== correctKey);
+      // pick 3 wrong
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      const opts = [correctKey, pool[0], pool[1], pool[2]];
+      // shuffle
+      for (let i = opts.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [opts[i], opts[j]] = [opts[j], opts[i]];
+      }
+      return opts;
+    }
+
+    let gameCorrect = "red";
+
+    function newGame(){
+      gameResult.hidden = true;
+      gameResult.textContent = "";
+      const c = sampleRandomColor();
+      const rgb = hslToRgb(c.h, c.s, c.l);
+      const hex = rgbToHex(rgb.r,rgb.g,rgb.b);
+      gameSwatch.style.background = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+      gameSwatch.title = hex;
+
+      gameCorrect = familyFromHsl(c.h,c.s,c.l);
+      const opts = pickChoices(gameCorrect);
+
+      choices.innerHTML = "";
+      opts.forEach(key => {
+        const f = families.find(x => x.key === key);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "choice";
+        btn.textContent = f ? f.label : key;
+        btn.addEventListener("click", () => {
+          const ok = (key === gameCorrect);
+          gameResult.hidden = false;
+          gameResult.innerHTML = ok
+            ? `<strong>✅ Nice!</strong> That’s the best family name for this color.`
+            : `<strong>❌ Not quite.</strong> Best match: <strong>${families.find(x=>x.key===gameCorrect).label}</strong>.`;
+        });
+        choices.appendChild(btn);
+      });
+    }
+
+    newGameBtn.addEventListener("click", newGame);
+
+    // init page
+    setFromHex(); // sync sliders from default hex
+    newGame();
+  </script>
+</body>
+</html>
