@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>14 — Resources • Color Lab</title>
+  <meta name="description" content="Curated resources for learning color science: books, standards, datasets, tools, and a suggested learning path for vision science and printing." />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+
+  <style>
+    .crumbs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; color: var(--muted); font-size: 13px; }
+    .crumbs a{ color: var(--text); text-decoration:none; }
+    .crumbs a:hover{ text-decoration: underline; }
+
+    .lesson-head{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
+    .lesson-head .seg{ max-width: 520px; width: 100%; }
+
+    .level-block{ display:none; }
+    html[data-level="kids"] .level-kids{ display:block; }
+    html[data-level="mid"]  .level-mid{ display:block; }
+    html[data-level="uni"]  .level-uni{ display:block; }
+
+    .callout{
+      border-left: 4px solid rgba(124,247,212,0.60);
+      padding: 12px 14px;
+      background: rgba(124,247,212,0.09);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
+
+    .panel{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+
+    .tagrow{ display:flex; gap:8px; flex-wrap:wrap; margin-top: 10px; }
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      font-weight: 900;
+      font-size: 13px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .list{
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+    .list li{ margin: 8px 0; }
+    .list strong{ color: var(--text); }
+
+    .path{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.12);
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .steps{
+      display:grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .step{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+    .step h4{ margin:0 0 6px; }
+    .muted{ color: var(--muted); }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .note{ display:flex; gap:12px; align-items:flex-start; }
+    .note__icon{ font-size: 20px; }
+
+    details{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+      margin-top: 10px;
+    }
+    summary{
+      cursor:pointer;
+      font-weight: 950;
+      color: var(--text);
+    }
+    details p, details li{ color: var(--muted); }
+
+    .pager{
+      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .pager .btn{ min-width: 160px; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Interactive color science</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="../index.html">Home</a>
+        <a class="nav__link" href="./glossary.html">Glossary</a>
+        <a class="nav__link" href="./about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span aria-hidden="true">›</span>
+      <span>Module E — Real-world</span>
+      <span aria-hidden="true">›</span>
+      <strong>14 — Resources</strong>
+    </div>
+
+    <section class="card">
+      <div class="lesson-head">
+        <div>
+          <h1>14 — Resources</h1>
+          <p class="lead">
+            A curated set of <strong>books</strong>, <strong>standards</strong>, <strong>datasets</strong>, and <strong>tools</strong>
+            for going deeper in vision science and printing.
+          </p>
+        </div>
+
+        <div aria-label="Difficulty level">
+          <div class="seg" role="group" aria-label="Difficulty toggle">
+            <button class="seg__btn" type="button" data-level="kids" aria-pressed="true">Kids / Beginner</button>
+            <button class="seg__btn" type="button" data-level="mid" aria-pressed="false">Intermediate</button>
+            <button class="seg__btn" type="button" data-level="uni" aria-pressed="false">University</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" role="note">
+        <strong>Tip:</strong> Don’t try to read everything. Pick a path, build intuition, then come back for the standards.
+      </div>
+    </section>
+
+    <section class="card" aria-label="Learning paths">
+      <div class="section-head">
+        <h2>Suggested learning paths</h2>
+        <p class="muted">Choose what matches your goals.</p>
+      </div>
+
+      <div class="grid">
+        <div class="panel">
+          <h3 style="margin:0 0 6px;">Path A: Vision science focus</h3>
+          <div class="tagrow">
+            <span class="tag">👁️ cones → color appearance</span>
+            <span class="tag">🧠 adaptation</span>
+            <span class="tag">🧪 perception experiments</span>
+          </div>
+
+          <div class="path">
+            <div class="steps">
+              <div class="step">
+                <h4>1) Fundamentals</h4>
+                <p class="muted" style="margin:0;">
+                  Trichromacy, cone fundamentals, opponent processing, and basic colorimetry.
+                </p>
+              </div>
+              <div class="step">
+                <h4>2) Color appearance</h4>
+                <p class="muted" style="margin:0;">
+                  Context effects, adaptation, and appearance models (intuition first, equations later).
+                </p>
+              </div>
+              <div class="step">
+                <h4>3) Measurement & models</h4>
+                <p class="muted" style="margin:0;">
+                  Matching functions, observers, illuminants, and ΔE differences.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <details>
+            <summary>Where this path helps</summary>
+            <ul class="list">
+              <li>Display calibration for perception-critical tasks</li>
+              <li>Research in vision, perception, and HCI</li>
+              <li>Understanding why “same pixels” can look different</li>
+            </ul>
+          </details>
+        </div>
+
+        <div class="panel">
+          <h3 style="margin:0 0 6px;">Path B: Printing & color management focus</h3>
+          <div class="tagrow">
+            <span class="tag">🖨️ CMYK + profiles</span>
+            <span class="tag">📏 ΔE tolerances</span>
+            <span class="tag">💡 viewing conditions</span>
+          </div>
+
+          <div class="path">
+            <div class="steps">
+              <div class="step">
+                <h4>1) Colorimetry essentials</h4>
+                <p class="muted" style="margin:0;">
+                  XYZ/Lab, illuminants, measurement geometry, and ΔE.
+                </p>
+              </div>
+              <div class="step">
+                <h4>2) ICC workflows</h4>
+                <p class="muted" style="margin:0;">
+                  Profiles, rendering intents, soft proofing, and device link concepts.
+                </p>
+              </div>
+              <div class="step">
+                <h4>3) Press realities</h4>
+                <p class="muted" style="margin:0;">
+                  Paper/ink variation, dot gain, standards (ISO), and QA processes.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <details>
+            <summary>Where this path helps</summary>
+            <ul class="list">
+              <li>Brand color consistency across print runs</li>
+              <li>Building reliable proofing workflows</li>
+              <li>Troubleshooting “it matched on screen but not on paper”</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Books and references">
+      <div class="section-head">
+        <h2>Books & references</h2>
+        <p class="muted">A small set that covers most of the field.</p>
+      </div>
+
+      <div class="grid">
+        <div class="panel">
+          <h3 style="margin:0 0 6px;">Good first books</h3>
+          <ul class="list">
+            <li><strong>Wyszecki & Stiles</strong> — classic, comprehensive (heavier).</li>
+            <li><strong>Fairchild</strong> — color appearance (great bridge from intuition → models).</li>
+            <li><strong>Hunt</strong> — the reproduction problem (printing / imaging perspective).</li>
+          </ul>
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">📚</div>
+            <div>
+              <strong>How to use books:</strong> skim chapters aligned with your current lesson (e.g., ΔE, metamerism, gamut),
+              then come back when you have questions.
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 style="margin:0 0 6px;">Printing / color management references</h3>
+          <ul class="list">
+            <li><strong>ICC profile documentation</strong> (concepts: PCS, intents, transforms).</li>
+            <li><strong>ISO standards</strong> for print processes and proofing (workflow guidance).</li>
+            <li><strong>Vendor docs</strong> (press/paper) for practical constraints and targets.</li>
+          </ul>
+          <p class="muted" style="margin-top:10px;">
+            Practical note: standards are extremely useful — but often easier after you’ve built intuition.
+          </p>
+        </div>
+      </div>
+
+      <details>
+        <summary>What to read if you only have one weekend</summary>
+        <ul class="list">
+          <li>One chapter on <strong>colorimetry</strong> (XYZ, Lab, illuminants)</li>
+          <li>One chapter on <strong>color difference</strong> (ΔE, tolerances)</li>
+          <li>One chapter on <strong>color reproduction</strong> (profiles, gamut mapping)</li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="card" aria-label="Standards and datasets">
+      <div class="section-head">
+        <h2>Standards, datasets, and tools</h2>
+        <p class="muted">Stuff you can use to measure, test, and build.</p>
+      </div>
+
+      <div class="grid">
+        <div class="panel">
+          <h3 style="margin:0 0 6px;">Standards (what they’re for)</h3>
+          <ul class="list">
+            <li><strong>CIE colorimetric observers</strong> — standard matching functions.</li>
+            <li><strong>Standard illuminants</strong> — D-series, A, etc. for reference viewing.</li>
+            <li><strong>Color difference formulas</strong> — ΔE variants (industry tolerances).</li>
+            <li><strong>Viewing conditions</strong> — how to set up consistent evaluation.</li>
+          </ul>
+          <p class="muted" style="margin-top:10px;">
+            In printing, standards matter because everyone needs to agree what “match” means.
+          </p>
+        </div>
+
+        <div class="panel">
+          <h3 style="margin:0 0 6px;">Datasets & practical files</h3>
+          <ul class="list">
+            <li><strong>ColorChecker / target charts</strong> — practical test references.</li>
+            <li><strong>Measured spectral reflectance sets</strong> — for metamerism and illuminant studies.</li>
+            <li><strong>ICC profiles</strong> — real device characterization data.</li>
+          </ul>
+          <p class="muted" style="margin-top:10px;">
+            Tip: keep a folder of “known good” test images and profiles for debugging.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:14px;">
+        <div class="panel">
+          <h3 style="margin:0 0 6px;">Tools (software)</h3>
+          <ul class="list">
+            <li><strong>Display calibration</strong> tools (colorimeter + software).</li>
+            <li><strong>Profile inspection</strong> tools (view LUTs, gamut plots).</li>
+            <li><strong>Scientific scripting</strong> (Python/Matlab) for conversions & plots.</li>
+          </ul>
+          <details>
+            <summary>Suggested “starter kit” setup</summary>
+            <ul class="list">
+              <li>A decent monitor + consistent room lighting</li>
+              <li>A basic colorimeter (for calibration)</li>
+              <li>A folder of test targets + reference profiles</li>
+              <li>A notebook for recording conditions (illumination, paper, settings)</li>
+            </ul>
+          </details>
+        </div>
+
+        <div class="panel">
+          <h3 style="margin:0 0 6px;">Tools (printing workflow)</h3>
+          <ul class="list">
+            <li><strong>Soft proofing</strong> in an image editor (simulate paper/profile).</li>
+            <li><strong>Spectrophotometer</strong> for measurement (press QA).</li>
+            <li><strong>Viewing booth</strong> (standard illuminant conditions for evaluation).</li>
+          </ul>
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">💡</div>
+            <div>
+              <strong>Pro tip:</strong> Most “mystery” print color problems are actually
+              <strong>viewing condition</strong> or <strong>profile mismatch</strong> problems.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <details>
+        <summary>Want this page to include clickable links?</summary>
+        <p class="muted" style="margin:10px 0 0;">
+          I can add direct links, but I need to browse the web to ensure the URLs are correct and current.
+          If you want links, tell me “add links” and I’ll update this page accordingly.
+        </p>
+      </details>
+
+      <details>
+        <summary>Glossary suggestions to add</summary>
+        <ul class="list">
+          <li><strong>Rendering intent</strong></li>
+          <li><strong>PCS</strong> (Profile Connection Space)</li>
+          <li><strong>Dot gain / TVI</strong></li>
+          <li><strong>Fluorescence / OBA</strong> (optical brighteners)</li>
+          <li><strong>Observer metamerism</strong></li>
+        </ul>
+      </details>
+    </section>
+
+    <nav class="pager" aria-label="Lesson navigation">
+      <a class="btn btn--ghost" href="./13-review-quiz.html">← Previous: Review quiz</a>
+      <a class="btn" href="../index.html">🏠 Home</a>
+      <a class="btn btn--primary" href="./15-next-steps.html">Next: Next steps →</a>
+    </nav>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">Up next: Next steps</div>
+          <div class="muted">How to extend this project (spectral models, real profiles, labs).</div>
+        </div>
+        <div class="footer__right">
+          <a class="btn btn--small" href="./15-next-steps.html">Continue</a>
+        </div>
+      </div>
+      <div class="tiny muted">Level setting is saved only in your browser (no account, no tracking).</div>
+    </footer>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+</body>
+</html>
