@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>13 — Review Quiz • Color Lab</title>
+  <meta name="description" content="Playful review quiz for color science foundations: perception, RGB/HSV, Lab/ΔE, CMYK, metamerism, and gamut mapping." />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+
+  <style>
+    .crumbs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; color: var(--muted); font-size: 13px; }
+    .crumbs a{ color: var(--text); text-decoration:none; }
+    .crumbs a:hover{ text-decoration: underline; }
+
+    .lesson-head{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
+    .lesson-head .seg{ max-width: 520px; width: 100%; }
+
+    .level-block{ display:none; }
+    html[data-level="kids"] .level-kids{ display:block; }
+    html[data-level="mid"]  .level-mid{ display:block; }
+    html[data-level="uni"]  .level-uni{ display:block; }
+
+    .callout{
+      border-left: 4px solid rgba(255,211,107,0.70);
+      padding: 12px 14px;
+      background: rgba(255,211,107,0.10);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .quiz-grid{
+      display:grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){ .quiz-grid{ grid-template-columns: 1fr; } }
+
+    .panel{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+
+    .qtitle{ margin: 0 0 6px; }
+    .muted{ color: var(--muted); }
+
+    .choices{
+      display:grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .choice{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+      cursor:pointer;
+      text-align:left;
+    }
+    .choice:hover{ background: rgba(255,255,255,0.09); }
+    .choice[disabled]{ opacity: 0.65; cursor:not-allowed; }
+    .choice .small{ font-size: 13px; color: var(--muted); }
+
+    .result{
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      margin-top: 12px;
+    }
+    .result.ok{ background: rgba(124,247,212,0.12); }
+    .result.bad{ background: rgba(255,120,120,0.12); }
+
+    .row{
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .swatchrow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 640px){ .swatchrow{ grid-template-columns: 1fr; } }
+
+    .swatch{
+      height: 140px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background:#222;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
+    }
+
+    .meterline{
+      height: 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      overflow:hidden;
+      position:relative;
+      margin-top: 10px;
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      background: rgba(255,255,255,0.80);
+    }
+
+    .mini{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.12);
+      padding: 10px;
+      margin-top: 12px;
+    }
+
+    canvas{
+      width:100%;
+      height:240px;
+      display:block;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.14);
+    }
+
+    .pager{
+      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .pager .btn{ min-width: 160px; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Interactive color science</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="../index.html">Home</a>
+        <a class="nav__link" href="./glossary.html">Glossary</a>
+        <a class="nav__link" href="./about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span aria-hidden="true">›</span>
+      <span>Module E — Real-world</span>
+      <span aria-hidden="true">›</span>
+      <strong>13 — Review quiz</strong>
+    </div>
+
+    <section class="card">
+      <div class="lesson-head">
+        <div>
+          <h1>13 — Review quiz</h1>
+          <p class="lead">
+            Quick, playful challenges across the whole Foundations track.
+            No pressure — learn by poking it.
+          </p>
+        </div>
+
+        <div aria-label="Difficulty level">
+          <div class="seg" role="group" aria-label="Difficulty toggle">
+            <button class="seg__btn" type="button" data-level="kids" aria-pressed="true">Kids / Beginner</button>
+            <button class="seg__btn" type="button" data-level="mid" aria-pressed="false">Intermediate</button>
+            <button class="seg__btn" type="button" data-level="uni" aria-pressed="false">University</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" role="note">
+        <strong>How it works:</strong> You’ll get a mix of concept questions and tiny “look-and-decide” tasks.
+        Your score is local to your browser (no tracking).
+      </div>
+
+      <div class="level-block level-kids">
+        <p class="muted">Tip: if you’re unsure, guess — then read the explanation. That’s the point 🙂</p>
+      </div>
+      <div class="level-block level-mid">
+        <p class="muted">Tip: watch how the visuals relate to the words (gamut, ΔE, subtractive vs additive).</p>
+      </div>
+      <div class="level-block level-uni">
+        <p class="muted">Tip: treat this as a fast sanity check before deeper work (profiles, spectral data, observers).</p>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Quiz">
+      <div class="quiz-grid">
+        <div class="panel">
+          <div class="row">
+            <span><strong id="qType">—</strong></span>
+            <strong class="kbd">Q <span id="qNum">1</span>/<span id="qTotal">10</span></strong>
+          </div>
+
+          <h2 class="qtitle" id="qTitle">—</h2>
+          <p class="muted" id="qPrompt">—</p>
+
+          <!-- Visual area changes per question -->
+          <div id="vizArea" class="mini" aria-label="Question visual area">
+            <!-- inserted dynamically -->
+          </div>
+
+          <div class="choices" id="choices" aria-label="Answer choices">
+            <!-- inserted dynamically -->
+          </div>
+
+          <div id="result" class="result" role="status" aria-live="polite" hidden></div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+            <button class="btn btn--primary" type="button" id="nextBtn" disabled>Next →</button>
+            <button class="btn btn--ghost" type="button" id="skipBtn">Skip</button>
+            <button class="btn btn--ghost" type="button" id="resetBtn">Reset score</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 style="margin:0 0 6px;">Score</h3>
+          <div class="meterline" aria-label="Score meter"><div class="fill" id="scoreFill"></div></div>
+          <div class="row">
+            <span>Correct</span><strong id="scoreOk">0</strong>
+          </div>
+          <div class="row">
+            <span>Wrong</span><strong id="scoreBad">0</strong>
+          </div>
+          <div class="row">
+            <span>Skipped</span><strong id="scoreSkip">0</strong>
+          </div>
+
+          <div class="mini">
+            <h4 style="margin:0 0 6px;">Mini-cheatsheet</h4>
+            <ul class="muted" style="margin:0; padding-left:18px;">
+              <li><strong>RGB</strong> adds light (screens)</li>
+              <li><strong>CMYK</strong> subtracts light (inks)</li>
+              <li><strong>ΔE</strong> measures perceived difference</li>
+              <li><strong>Metamerism</strong>: same look, different spectra</li>
+              <li><strong>Gamut</strong>: possible colors of a device</li>
+            </ul>
+          </div>
+
+          <div class="mini">
+            <h4 style="margin:0 0 6px;">Want more practice?</h4>
+            <p class="muted" style="margin:0;">
+              Revisit pages 08–11 for the most “mathy” bits (ΔE, matching, CMYK, gamut).
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="pager" aria-label="Lesson navigation">
+      <a class="btn btn--ghost" href="./12-applications.html">← Previous: Applications</a>
+      <a class="btn" href="../index.html">🏠 Home</a>
+      <a class="btn btn--primary" href="./14-resources.html">Next: Resources →</a>
+    </nav>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">Up next: Resources</div>
+          <div class="muted">Suggested books, standards, datasets, and tools (with a gentle path).</div>
+        </div>
+        <div class="footer__right">
+          <a class="btn btn--small" href="./14-resources.html">Continue</a>
+        </div>
+      </div>
+      <div class="tiny muted">Level setting is saved only in your browser (no account, no tracking).</div>
+    </footer>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    // ---------- Helpers ----------
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+    function clamp255(x){ return Math.max(0, Math.min(255, x)); }
+    function hex2(n){ return n.toString(16).padStart(2,"0"); }
+    function rgbToHex(r,g,b){ return ("#" + hex2(r) + hex2(g) + hex2(b)).toUpperCase(); }
+    function rgbCss(c){ return `rgb(${c.r},${c.g},${c.b})`; }
+    function randInt(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
+    function shuffle(arr){
+      const a = arr.slice();
+      for (let i=a.length-1; i>0; i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a;
+    }
+
+    // Lab/ΔE76 (D65) for one question type
+    const D65 = { Xn: 0.95047, Yn: 1.00000, Zn: 1.08883 };
+    function srgbToLinear(c){ c/=255; return (c <= 0.04045) ? (c/12.92) : Math.pow((c+0.055)/1.055, 2.4); }
+    function rgbToXyz(rgb){
+      const r=srgbToLinear(rgb.r), g=srgbToLinear(rgb.g), b=srgbToLinear(rgb.b);
+      return {
+        X: 0.4124564*r + 0.3575761*g + 0.1804375*b,
+        Y: 0.2126729*r + 0.7151522*g + 0.0721750*b,
+        Z: 0.0193339*r + 0.1191920*g + 0.9503041*b,
+      };
+    }
+    function fLab(t){
+      const d = 6/29;
+      return (t > Math.pow(d,3)) ? Math.cbrt(t) : (t/(3*d*d) + 4/29);
+    }
+    function xyzToLab(xyz){
+      const xr=xyz.X/D65.Xn, yr=xyz.Y/D65.Yn, zr=xyz.Z/D65.Zn;
+      const fx=fLab(xr), fy=fLab(yr), fz=fLab(zr);
+      return { L: 116*fy - 16, a: 500*(fx - fy), b: 200*(fy - fz) };
+    }
+    function deltaE76(l1,l2){
+      const dL=l1.L-l2.L, da=l1.a-l2.a, db=l1.b-l2.b;
+      return Math.sqrt(dL*dL + da*da + db*db);
+    }
+
+    // ---------- DOM ----------
+    const qType = document.getElementById("qType");
+    const qNum = document.getElementById("qNum");
+    const qTotal = document.getElementById("qTotal");
+    const qTitle = document.getElementById("qTitle");
+    const qPrompt = document.getElementById("qPrompt");
+    const vizArea = document.getElementById("vizArea");
+    const choicesEl = document.getElementById("choices");
+    const resultEl = document.getElementById("result");
+
+    const nextBtn = document.getElementById("nextBtn");
+    const skipBtn = document.getElementById("skipBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    const scoreFill = document.getElementById("scoreFill");
+    const scoreOkEl = document.getElementById("scoreOk");
+    const scoreBadEl = document.getElementById("scoreBad");
+    const scoreSkipEl = document.getElementById("scoreSkip");
+
+    // ---------- State ----------
+    const TOTAL = 10;
+    qTotal.textContent = TOTAL;
+
+    let idx = 0;
+    let locked = false;
+
+    let score = {
+      ok: Number(localStorage.getItem("quiz_ok") || "0"),
+      bad: Number(localStorage.getItem("quiz_bad") || "0"),
+      skip: Number(localStorage.getItem("quiz_skip") || "0"),
+    };
+
+    // ---------- Question generators ----------
+    function makeConceptQ(){
+      const pool = [
+        {
+          type: "Concept",
+          title: "RGB is…",
+          prompt: "Pick the best description.",
+          choices: [
+            {t:"Additive mixing of light (screens).", ok:true},
+            {t:"Subtractive mixing of ink (printing).", ok:false},
+            {t:"A measure of perceived difference (ΔE).", ok:false},
+          ],
+          explain: "RGB is additive: more R/G/B means more emitted light on a display."
+        },
+        {
+          type: "Concept",
+          title: "CMYK is…",
+          prompt: "Pick the best description.",
+          choices: [
+            {t:"Subtractive mixing of ink (printing).", ok:true},
+            {t:"Additive mixing of light (screens).", ok:false},
+            {t:"A special kind of Lab space.", ok:false},
+          ],
+          explain: "CMYK is subtractive: inks absorb (remove) parts of the light reflecting off paper."
+        },
+        {
+          type: "Concept",
+          title: "Metamerism means…",
+          prompt: "Two colors can look the same even if…",
+          choices: [
+            {t:"their underlying spectra are different.", ok:true},
+            {t:"their RGB values are identical.", ok:false},
+            {t:"they are viewed in complete darkness.", ok:false},
+          ],
+          explain: "Different spectral power distributions can produce the same cone responses (a match) in one condition."
+        },
+        {
+          type: "Concept",
+          title: "A gamut is…",
+          prompt: "Pick the best definition.",
+          choices: [
+            {t:"The set of colors a device can produce or reproduce.", ok:true},
+            {t:"The total number of pixels on a screen.", ok:false},
+            {t:"A type of color blindness.", ok:false},
+          ],
+          explain: "Gamuts differ across devices (screens vs printers), so some colors may be out-of-gamut."
+        },
+      ];
+      const q = pool[randInt(0,pool.length-1)];
+      return { ...q, choices: shuffle(q.choices), viz: null };
+    }
+
+    function makeDeltaEQ(){
+      // show two swatches; ask which pair is closer (smaller ΔE)
+      const base = { r: randInt(40,220), g: randInt(40,220), b: randInt(40,220) };
+      const near = {
+        r: clamp255(base.r + randInt(-8,8)),
+        g: clamp255(base.g + randInt(-8,8)),
+        b: clamp255(base.b + randInt(-8,8)),
+      };
+      const far = {
+        r: clamp255(base.r + randInt(40,120) * (Math.random()<0.5?-1:1)),
+        g: clamp255(base.g + randInt(40,120) * (Math.random()<0.5?-1:1)),
+        b: clamp255(base.b + randInt(40,120) * (Math.random()<0.5?-1:1)),
+      };
+
+      const dNear = deltaE76(xyzToLab(rgbToXyz(base)), xyzToLab(rgbToXyz(near)));
+      const dFar  = deltaE76(xyzToLab(rgbToXyz(base)), xyzToLab(rgbToXyz(far)));
+
+      const correct = (dNear <= dFar) ? "Pair A" : "Pair B";
+
+      return {
+        type: "ΔE / perception",
+        title: "Which pair is more similar?",
+        prompt: "Pick the pair with the smaller perceived difference (ΔE).",
+        viz: { kind:"twoPairs", A:{c1:base,c2:near}, B:{c1:base,c2:far} },
+        choices: shuffle([
+          {t:"Pair A", ok: correct==="Pair A"},
+          {t:"Pair B", ok: correct==="Pair B"},
+          {t:"They are identical", ok:false},
+        ]),
+        explain: `ΔE76 says Pair ${correct.slice(-1)} is closer here (near ≈ ${dNear.toFixed(2)}, far ≈ ${dFar.toFixed(2)}).`
+      };
+    }
+
+    function makeAddSubQ(){
+      // simple additive/subtractive intuition
+      const pool = [
+        {
+          type:"Mixing",
+          title:"If you add more light on a screen…",
+          prompt:"What usually happens?",
+          choices: shuffle([
+            {t:"It gets brighter.", ok:true},
+            {t:"It gets darker.", ok:false},
+            {t:"It turns into CMYK.", ok:false},
+          ]),
+          explain:"On a display, adding RGB light increases brightness (additive mixing).",
+          viz: null
+        },
+        {
+          type:"Mixing",
+          title:"If you put more ink on paper…",
+          prompt:"What usually happens?",
+          choices: shuffle([
+            {t:"It gets darker.", ok:true},
+            {t:"It gets brighter.", ok:false},
+            {t:"It emits more light.", ok:false},
+          ]),
+          explain:"Ink absorbs light. More ink usually means less reflected light (darker).",
+          viz: null
+        }
+      ];
+      return pool[randInt(0,pool.length-1)];
+    }
+
+    function makeGamutQ(){
+      // draw a simple triangle and point; ask if in/out of "printer"
+      const pt = { x: Math.random()*0.8, y: Math.random()*0.9 };
+      // printer poly same as lesson (toy)
+      const printerPoly = [
+        {x: 0.58, y: 0.33},
+        {x: 0.30, y: 0.54},
+        {x: 0.18, y: 0.10},
+        {x: 0.30, y: 0.18},
+      ];
+      function pointInPoly(pt, poly){
+        let inside=false;
+        for (let i=0,j=poly.length-1;i<poly.length;j=i++){
+          const xi=poly[i].x, yi=poly[i].y;
+          const xj=poly[j].x, yj=poly[j].y;
+          const intersect = ((yi>pt.y)!=(yj>pt.y)) &&
+            (pt.x < (xj-xi)*(pt.y-yi)/((yj-yi)||1e-9) + xi);
+          if (intersect) inside=!inside;
+        }
+        return inside;
+      }
+      const inside = pointInPoly(pt, printerPoly);
+      return {
+        type:"Gamut",
+        title:"Is this point printable?",
+        prompt:"Assume the small polygon is the printer gamut. Is the dot inside it?",
+        viz: { kind:"gamutDot", pt, printerPoly },
+        choices: shuffle([
+          {t:"Inside (printable)", ok: inside},
+          {t:"Outside (needs mapping)", ok: !inside},
+          {t:"Impossible to tell", ok:false},
+        ]),
+        explain: inside ? "If it’s inside the printer region, it can be reproduced (in this toy model)."
+                       : "Outside means out-of-gamut; it must be mapped (clipped/compressed) to fit."
+      };
+    }
+
+    function makeWbQ(){
+      // show warm vs corrected patch; ask which looks neutral
+      return {
+        type:"Vision / camera",
+        title:"Which looks more neutral?",
+        prompt:"Warm lighting tints neutrals yellow. Which swatch looks like a better gray card?",
+        viz: { kind:"wbSwatches" },
+        choices: shuffle([
+          {t:"Right swatch", ok:true},
+          {t:"Left swatch", ok:false},
+          {t:"Both are equally neutral", ok:false},
+        ]),
+        explain:"White balance aims to make neutrals (gray/white) look neutral under different lighting."
+      };
+    }
+
+    function generateQuestion(){
+      // mix types
+      const builders = [makeConceptQ, makeDeltaEQ, makeAddSubQ, makeGamutQ, makeWbQ];
+      return builders[randInt(0, builders.length-1)]();
+    }
+
+    // Build a fixed set for this session so "Next" is stable.
+    const questions = Array.from({length: TOTAL}, () => generateQuestion());
+
+    // ---------- Visual renderers ----------
+    function clearViz(){
+      vizArea.innerHTML = "";
+    }
+
+    function renderTwoPairs(v){
+      const wrap = document.createElement("div");
+      wrap.className = "swatchrow";
+      wrap.innerHTML = `
+        <div class="panel" style="padding:10px;">
+          <div class="muted" style="font-size:13px;">Pair A</div>
+          <div class="swatch" id="a1"></div>
+          <div class="swatch" id="a2" style="margin-top:10px;"></div>
+          <div class="row"><span>Hex</span><strong class="kbd">${rgbToHex(v.A.c1.r,v.A.c1.g,v.A.c1.b)} / ${rgbToHex(v.A.c2.r,v.A.c2.g,v.A.c2.b)}</strong></div>
+        </div>
+        <div class="panel" style="padding:10px;">
+          <div class="muted" style="font-size:13px;">Pair B</div>
+          <div class="swatch" id="b1"></div>
+          <div class="swatch" id="b2" style="margin-top:10px;"></div>
+          <div class="row"><span>Hex</span><strong class="kbd">${rgbToHex(v.B.c1.r,v.B.c1.g,v.B.c1.b)} / ${rgbToHex(v.B.c2.r,v.B.c2.g,v.B.c2.b)}</strong></div>
+        </div>
+      `;
+      vizArea.appendChild(wrap);
+      wrap.querySelector("#a1").style.background = rgbCss(v.A.c1);
+      wrap.querySelector("#a2").style.background = rgbCss(v.A.c2);
+      wrap.querySelector("#b1").style.background = rgbCss(v.B.c1);
+      wrap.querySelector("#b2").style.background = rgbCss(v.B.c2);
+    }
+
+    function renderWbSwatches(){
+      const warm = {r: 185, g: 175, b: 140};
+      const corrected = {r: 165, g: 165, b: 165};
+      const wrap = document.createElement("div");
+      wrap.className = "swatchrow";
+      wrap.innerHTML = `
+        <div class="panel" style="padding:10px;">
+          <div class="muted" style="font-size:13px;">Left</div>
+          <div class="swatch" id="l"></div>
+          <div class="row"><span>RGB</span><strong class="kbd">(${warm.r},${warm.g},${warm.b})</strong></div>
+        </div>
+        <div class="panel" style="padding:10px;">
+          <div class="muted" style="font-size:13px;">Right</div>
+          <div class="swatch" id="r"></div>
+          <div class="row"><span>RGB</span><strong class="kbd">(${corrected.r},${corrected.g},${corrected.b})</strong></div>
+        </div>
+      `;
+      vizArea.appendChild(wrap);
+      wrap.querySelector("#l").style.background = rgbCss(warm);
+      wrap.querySelector("#r").style.background = rgbCss(corrected);
+    }
+
+    function renderGamutDot(v){
+      const c = document.createElement("canvas");
+      c.width = 900;
+      c.height = 360;
+      c.setAttribute("aria-label","Toy gamut dot canvas");
+      vizArea.appendChild(c);
+      const g = c.getContext("2d");
+
+      // draw frame
+      g.fillStyle = "rgba(0,0,0,0.22)";
+      g.fillRect(0,0,c.width,c.height);
+
+      const pad = 22;
+      g.strokeStyle = "rgba(255,255,255,0.18)";
+      g.lineWidth = 2;
+      g.strokeRect(pad,pad,c.width-2*pad,c.height-2*pad);
+
+      function toPx(p){
+        const x = pad + (p.x/0.8) * (c.width-2*pad);
+        const y = pad + (1 - p.y/0.9) * (c.height-2*pad);
+        return {x,y};
+      }
+
+      // printer poly
+      g.beginPath();
+      const p0 = toPx(v.printerPoly[0]);
+      g.moveTo(p0.x,p0.y);
+      for (let i=1;i<v.printerPoly.length;i++){
+        const p=toPx(v.printerPoly[i]);
+        g.lineTo(p.x,p.y);
+      }
+      g.closePath();
+      g.fillStyle = "rgba(124,247,212,0.10)";
+      g.fill();
+      g.strokeStyle = "rgba(124,247,212,0.85)";
+      g.lineWidth = 4;
+      g.stroke();
+
+      // point
+      const q = toPx(v.pt);
+      g.beginPath();
+      g.arc(q.x,q.y,10,0,Math.PI*2);
+      g.fillStyle = "rgba(255,211,107,0.95)";
+      g.fill();
+      g.strokeStyle = "rgba(0,0,0,0.35)";
+      g.lineWidth = 2;
+      g.stroke();
+
+      g.fillStyle = "rgba(255,255,255,0.80)";
+      g.font = "14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      g.fillText(`dot: x ${v.pt.x.toFixed(2)}, y ${v.pt.y.toFixed(2)}`, pad+10, pad+20);
+    }
+
+    function renderViz(q){
+      clearViz();
+      if (!q.viz){
+        vizArea.innerHTML = `<div class="muted">No visual for this one — it’s a concept check.</div>`;
+        return;
+      }
+      if (q.viz.kind === "twoPairs") return renderTwoPairs(q.viz);
+      if (q.viz.kind === "gamutDot") return renderGamutDot(q.viz);
+      if (q.viz.kind === "wbSwatches") return renderWbSwatches();
+      vizArea.innerHTML = `<div class="muted">Visual not available.</div>`;
+    }
+
+    // ---------- Quiz flow ----------
+    function updateScoreUI(){
+      scoreOkEl.textContent = score.ok;
+      scoreBadEl.textContent = score.bad;
+      scoreSkipEl.textContent = score.skip;
+
+      const total = score.ok + score.bad + score.skip;
+      const pct = total === 0 ? 0 : (score.ok / total);
+      scoreFill.style.width = (pct*100).toFixed(1) + "%";
+
+      localStorage.setItem("quiz_ok", String(score.ok));
+      localStorage.setItem("quiz_bad", String(score.bad));
+      localStorage.setItem("quiz_skip", String(score.skip));
+    }
+
+    function setLocked(v){
+      locked = v;
+      nextBtn.disabled = !v;
+      Array.from(choicesEl.querySelectorAll("button.choice")).forEach(b => b.disabled = v);
+    }
+
+    function showQuestion(){
+      const q = questions[idx];
+      qType.textContent = q.type || "Quiz";
+      qNum.textContent = String(idx+1);
+
+      qTitle.textContent = q.title;
+      qPrompt.textContent = q.prompt;
+
+      renderViz(q);
+
+      // render choices
+      choicesEl.innerHTML = "";
+      resultEl.hidden = true;
+      resultEl.className = "result";
+      resultEl.textContent = "";
+      setLocked(false);
+
+      q.choices.forEach((ch) => {
+        const b = document.createElement("button");
+        b.className = "choice";
+        b.type = "button";
+        b.innerHTML = `<div><strong>${ch.t}</strong></div>`;
+        b.addEventListener("click", () => answer(ch));
+        choicesEl.appendChild(b);
+      });
+
+      updateScoreUI();
+    }
+
+    function answer(ch){
+      if (locked) return;
+      const q = questions[idx];
+
+      setLocked(true);
+
+      if (ch.ok){
+        score.ok++;
+        resultEl.hidden = false;
+        resultEl.classList.add("ok");
+        resultEl.innerHTML = `<strong>✅ Correct!</strong> <span class="muted">${q.explain || ""}</span>`;
+      } else {
+        score.bad++;
+        resultEl.hidden = false;
+        resultEl.classList.add("bad");
+        // find correct for hint
+        const correct = q.choices.find(x => x.ok);
+        resultEl.innerHTML = `<strong>❌ Not quite.</strong> <span class="muted">${q.explain || ""}</span><div class="row"><span>Best answer</span><strong class="kbd">${correct ? correct.t : "—"}</strong></div>`;
+      }
+
+      updateScoreUI();
+    }
+
+    function next(){
+      idx++;
+      if (idx >= TOTAL){
+        // end screen
+        qType.textContent = "Finished 🎉";
+        qNum.textContent = String(TOTAL);
+        qTitle.textContent = "You finished the quiz!";
+        qPrompt.textContent = "Reset if you want another run, or revisit any lesson.";
+        vizArea.innerHTML = `
+          <div class="panel" style="background: rgba(255,255,255,0.03);">
+            <div class="row"><span>Correct</span><strong class="kbd">${score.ok}</strong></div>
+            <div class="row"><span>Wrong</span><strong class="kbd">${score.bad}</strong></div>
+            <div class="row"><span>Skipped</span><strong class="kbd">${score.skip}</strong></div>
+            <p class="muted" style="margin:10px 0 0;">
+              Nice. For deeper practice, try the ΔE page (08) and the gamut page (11) again.
+            </p>
+          </div>
+        `;
+        choicesEl.innerHTML = "";
+        resultEl.hidden = true;
+        nextBtn.disabled = true;
+        skipBtn.disabled = true;
+        return;
+      }
+      showQuestion();
+    }
+
+    function skip(){
+      if (locked) return;
+      score.skip++;
+      updateScoreUI();
+      // show explanation anyway (soft feedback)
+      const q = questions[idx];
+      resultEl.hidden = false;
+      resultEl.className = "result";
+      resultEl.innerHTML = `<strong>⏭️ Skipped.</strong> <span class="muted">${q.explain || ""}</span>`;
+      setLocked(true);
+    }
+
+    nextBtn.addEventListener("click", next);
+    skipBtn.addEventListener("click", skip);
+    resetBtn.addEventListener("click", () => {
+      score = { ok:0, bad:0, skip:0 };
+      updateScoreUI();
+      // restart quiz
+      idx = 0;
+      skipBtn.disabled = false;
+      nextBtn.disabled = true;
+      showQuestion();
+    });
+
+    // init
+    updateScoreUI();
+    showQuestion();
+  </script>
+</body>
+</html>
