@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>11 — Color Gamuts • Color Lab</title>
+  <meta name="description" content="What a color gamut is and why devices can't show/print every color. Interactive gamut visual and out-of-gamut demo." />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+
+  <style>
+    .crumbs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; color: var(--muted); font-size: 13px; }
+    .crumbs a{ color: var(--text); text-decoration:none; }
+    .crumbs a:hover{ text-decoration: underline; }
+
+    .lesson-head{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
+    .lesson-head .seg{ max-width: 520px; width: 100%; }
+
+    .level-block{ display:none; }
+    html[data-level="kids"] .level-kids{ display:block; }
+    html[data-level="mid"]  .level-mid{ display:block; }
+    html[data-level="uni"]  .level-uni{ display:block; }
+
+    .callout{
+      border-left: 4px solid rgba(255,211,107,0.70);
+      padding: 12px 14px;
+      background: rgba(255,211,107,0.10);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .tryit-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){ .tryit-grid{ grid-template-columns: 1fr; } }
+
+    .panel{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+
+    .control{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      margin-bottom: 10px;
+    }
+    .control label{ font-weight: 850; display:flex; justify-content:space-between; gap:10px; }
+    .control input[type="range"]{ width:100%; }
+    .hint{ font-size: 12.5px; color: var(--muted); }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .two{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 640px){ .two{ grid-template-columns: 1fr; } }
+
+    .swatch{
+      height: 150px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background:#222;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
+    }
+
+    .row{
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    canvas{
+      width:100%;
+      height:360px;
+      display:block;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.14);
+      touch-action: none;
+    }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.70);
+    }
+
+    .note{ display:flex; gap:12px; align-items:flex-start; }
+    .note__icon{ font-size: 20px; }
+
+    .pager{
+      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .pager .btn{ min-width: 160px; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Interactive color science</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="../index.html">Home</a>
+        <a class="nav__link" href="./glossary.html">Glossary</a>
+        <a class="nav__link" href="./about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span aria-hidden="true">›</span>
+      <span>Module D — Matching & printing</span>
+      <span aria-hidden="true">›</span>
+      <strong>11 — Color gamuts</strong>
+    </div>
+
+    <section class="card">
+      <div class="lesson-head">
+        <div>
+          <h1>11 — Color gamuts</h1>
+          <p class="lead">
+            A <strong>gamut</strong> is the set of colors a device can produce (a screen) or reproduce (a printer).
+            Some colors are simply <strong>out-of-gamut</strong>.
+          </p>
+        </div>
+
+        <div aria-label="Difficulty level">
+          <div class="seg" role="group" aria-label="Difficulty toggle">
+            <button class="seg__btn" type="button" data-level="kids" aria-pressed="true">Kids / Beginner</button>
+            <button class="seg__btn" type="button" data-level="mid" aria-pressed="false">Intermediate</button>
+            <button class="seg__btn" type="button" data-level="uni" aria-pressed="false">University</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" role="note">
+        <strong>Big idea:</strong> Out-of-gamut colors must be mapped (clipped/compressed) when converting between devices —
+        that’s why the same “color” can change when printed.
+      </div>
+
+      <div class="level-block level-kids">
+        <h2>Not every crayon fits in the box</h2>
+        <ul>
+          <li>Some screens can show very bright colors.</li>
+          <li>Some printers can’t print those exact colors.</li>
+          <li>When a color is missing, we pick the closest one we can.</li>
+        </ul>
+      </div>
+
+      <div class="level-block level-mid">
+        <h2>Gamut depends on primaries + medium</h2>
+        <ul>
+          <li>Displays: primaries define a triangle-like region (in chromaticity).</li>
+          <li>Printers: ink set + paper define a different region (often smaller in some areas).</li>
+          <li>Color management chooses how to map out-of-gamut colors (rendering intents).</li>
+        </ul>
+      </div>
+
+      <div class="level-block level-uni">
+        <h2>Chromaticity and volume</h2>
+        <p>
+          Gamuts are 3D volumes (e.g., in Lab), not just 2D shapes. Here we show a toy 2D view to build intuition.
+        </p>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Try it">
+      <div class="section-head">
+        <h2>Try it: sRGB triangle with real-looking color field + clipping</h2>
+        <p class="muted">
+          The colored gradient is drawn inside the sRGB triangle. The smaller polygon is a “printer-ish” toy gamut.
+          Drag the point and watch it clip to the printer boundary if it goes out-of-gamut.
+        </p>
+      </div>
+
+      <div class="tryit-grid">
+        <div>
+          <div class="panel">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+              <span class="pill"><span class="dot" style="background:rgba(255,255,255,0.85)"></span> sRGB triangle</span>
+              <span class="pill"><span class="dot" style="background:rgba(124,247,212,0.85)"></span> Printer-ish (toy)</span>
+              <span class="pill"><span class="dot" style="background:rgba(255,211,107,0.95)"></span> Your point</span>
+            </div>
+
+            <canvas id="gamut" width="1000" height="600" aria-label="Gamut canvas"></canvas>
+
+            <div class="row">
+              <span>Pointer</span>
+              <strong id="xyText">x —, y —</strong>
+            </div>
+            <div class="row">
+              <span>Status</span>
+              <strong id="statusText">—</strong>
+            </div>
+          </div>
+
+          <div class="control" style="margin-top:12px;">
+            <label for="satBoost">Saturation boost <span class="kbd" id="satNum">1.0×</span></label>
+            <input id="satBoost" type="range" min="0.7" max="2.2" step="0.1" value="1.0" />
+            <div class="hint">This boosts the drawn colors (just for visualization). Higher = more vivid field.</div>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn--ghost" type="button" id="randInBtn">🎲 Random (inside printer)</button>
+            <button class="btn btn--ghost" type="button" id="randOutBtn">🎲 Random (out of printer)</button>
+            <button class="btn btn--primary" type="button" id="centerBtn">Center point</button>
+          </div>
+
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">🖨️</div>
+            <div>
+              <strong>Printing link:</strong> Real mapping depends on ICC profiles + rendering intent.
+              Here we do the simplest thing: nearest-point clipping.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="two">
+            <div class="panel">
+              <div class="muted" style="font-size:13px;">Chosen point (ideal)</div>
+              <div class="swatch" id="swIdeal" aria-label="Ideal swatch"></div>
+              <div class="row"><span>RGB (visual)</span><strong id="rgbIdeal">—</strong></div>
+              <div class="row"><span>Hex</span><strong class="kbd" id="hexIdeal">—</strong></div>
+            </div>
+
+            <div class="panel">
+              <div class="muted" style="font-size:13px;">Clipped to printer</div>
+              <div class="swatch" id="swClip" aria-label="Clipped swatch"></div>
+              <div class="row"><span>RGB (visual)</span><strong id="rgbClip">—</strong></div>
+              <div class="row"><span>Hex</span><strong class="kbd" id="hexClip">—</strong></div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:12px;">
+            <h3 class="h4" style="margin:0 0 8px;">What you’re seeing</h3>
+            <ul class="muted" style="margin:0; padding-left:18px;">
+              <li>The colored field is “all the colors” the sRGB triangle can represent (in this toy view).</li>
+              <li>The printer polygon is smaller → some vivid points must be mapped inward.</li>
+              <li>Clipping usually reduces saturation (prints often look less vivid than screens).</li>
+            </ul>
+          </div>
+
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">👁️</div>
+            <div>
+              <strong>Vision note:</strong> This is a 2D intuition view. Real gamuts are 3D volumes (lightness matters).
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="pager" aria-label="Lesson navigation">
+      <a class="btn btn--ghost" href="./10-cmyk-and-printing.html">← Previous: CMYK & printing</a>
+      <a class="btn" href="../index.html">🏠 Home</a>
+      <a class="btn btn--primary" href="./12-applications.html">Next: Applications →</a>
+    </nav>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">Up next: Applications</div>
+          <div class="muted">Where color science shows up in real life (vision + printing).</div>
+        </div>
+        <div class="footer__right">
+          <a class="btn btn--small" href="./12-applications.html">Continue</a>
+        </div>
+      </div>
+      <div class="tiny muted">Level setting is saved only in your browser (no account, no tracking).</div>
+    </footer>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+    function hex2(n){ return n.toString(16).padStart(2,"0"); }
+    function rgbToHex(r,g,b){ return ("#" + hex2(r) + hex2(g) + hex2(b)).toUpperCase(); }
+
+    // ---- Toy chromaticity-ish primaries (approx sRGB xy) ----
+    const srgbTri = [
+      {x: 0.64, y: 0.33, name: "R"},
+      {x: 0.30, y: 0.60, name: "G"},
+      {x: 0.15, y: 0.06, name: "B"},
+    ];
+
+    // Toy printer-ish polygon (inside sRGB triangle)
+    const printerPoly = [
+      {x: 0.58, y: 0.33},
+      {x: 0.30, y: 0.54},
+      {x: 0.18, y: 0.10},
+      {x: 0.30, y: 0.18},
+    ];
+
+    const canvas = document.getElementById("gamut");
+    const ctx = canvas.getContext("2d");
+    const xyText = document.getElementById("xyText");
+    const statusText = document.getElementById("statusText");
+
+    const swIdeal = document.getElementById("swIdeal");
+    const swClip = document.getElementById("swClip");
+    const rgbIdeal = document.getElementById("rgbIdeal");
+    const rgbClip = document.getElementById("rgbClip");
+    const hexIdeal = document.getElementById("hexIdeal");
+    const hexClip = document.getElementById("hexClip");
+
+    const satBoost = document.getElementById("satBoost");
+    const satNum = document.getElementById("satNum");
+
+    const view = { xMin: 0.0, xMax: 0.8, yMin: 0.0, yMax: 0.9 };
+
+    function toPx(p){
+      const pad = 26;
+      const w = canvas.width - 2*pad;
+      const h = canvas.height - 2*pad;
+      const x = pad + ((p.x - view.xMin) / (view.xMax - view.xMin)) * w;
+      const y = pad + (1 - (p.y - view.yMin) / (view.yMax - view.yMin)) * h;
+      return {x,y};
+    }
+    function fromPx(px, py){
+      const pad = 26;
+      const w = canvas.width - 2*pad;
+      const h = canvas.height - 2*pad;
+      const x = ((px - pad)/w) * (view.xMax - view.xMin) + view.xMin;
+      const y = (1 - (py - pad)/h) * (view.yMax - view.yMin) + view.yMin;
+      return {x, y};
+    }
+
+    function drawAxes(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      const pad = 26;
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(255,255,255,0.18)";
+      ctx.strokeRect(pad, pad, canvas.width-2*pad, canvas.height-2*pad);
+
+      ctx.fillStyle = "rgba(255,255,255,0.75)";
+      ctx.font = "16px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.fillText("sRGB gamut field (toy chromaticity map)", pad+10, pad+24);
+
+      ctx.fillStyle = "rgba(255,255,255,0.55)";
+      ctx.font = "13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.fillText("x", canvas.width-40, canvas.height-18);
+      ctx.fillText("y", pad+10, 18);
+    }
+
+    function drawPoly(points, stroke, fill, width){
+      ctx.beginPath();
+      const p0 = toPx(points[0]);
+      ctx.moveTo(p0.x, p0.y);
+      for (let i=1; i<points.length; i++){
+        const p = toPx(points[i]);
+        ctx.lineTo(p.x, p.y);
+      }
+      ctx.closePath();
+      if (fill){
+        ctx.fillStyle = fill;
+        ctx.fill();
+      }
+      ctx.lineWidth = width || 3;
+      ctx.strokeStyle = stroke;
+      ctx.stroke();
+    }
+
+    function drawPoint(p, color, r=8){
+      const q = toPx(p);
+      ctx.beginPath();
+      ctx.arc(q.x, q.y, r, 0, Math.PI*2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(0,0,0,0.35)";
+      ctx.stroke();
+    }
+
+    // ---- Barycentric weights for triangle (for the color field) ----
+    function barycentric(p, tri){
+      const A=tri[0], B=tri[1], C=tri[2];
+      const detT = (B.y - C.y)*(A.x - C.x) + (C.x - B.x)*(A.y - C.y);
+      const wA = ((B.y - C.y)*(p.x - C.x) + (C.x - B.x)*(p.y - C.y)) / detT;
+      const wB = ((C.y - A.y)*(p.x - C.x) + (A.x - C.x)*(p.y - C.y)) / detT;
+      const wC = 1 - wA - wB;
+      return { wA, wB, wC };
+    }
+    function insideTriWeights(w){
+      const eps = -1e-6;
+      return (w.wA >= eps && w.wB >= eps && w.wC >= eps);
+    }
+
+    // ---- Geometry (for printer polygon clipping) ----
+    function pointInPoly(pt, poly){
+      let inside = false;
+      for (let i=0, j=poly.length-1; i<poly.length; j=i++){
+        const xi=poly[i].x, yi=poly[i].y;
+        const xj=poly[j].x, yj=poly[j].y;
+        const intersect = ((yi>pt.y)!=(yj>pt.y)) &&
+          (pt.x < (xj-xi)*(pt.y-yi)/((yj-yi)||1e-9) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+    function nearestPointOnSegment(p, a, b){
+      const vx=b.x-a.x, vy=b.y-a.y;
+      const wx=p.x-a.x, wy=p.y-a.y;
+      const vv=vx*vx+vy*vy;
+      const t = vv===0 ? 0 : (wx*vx + wy*vy)/vv;
+      const tt = Math.max(0, Math.min(1, t));
+      return { x: a.x + tt*vx, y: a.y + tt*vy };
+    }
+    function dist2(p,q){ const dx=p.x-q.x, dy=p.y-q.y; return dx*dx+dy*dy; }
+    function clipToPoly(p, poly){
+      if (pointInPoly(p, poly)) return { clipped:false, p };
+      let best=null, bestD=Infinity;
+      for (let i=0; i<poly.length; i++){
+        const a=poly[i], b=poly[(i+1)%poly.length];
+        const q=nearestPointOnSegment(p,a,b);
+        const d=dist2(p,q);
+        if (d<bestD){ bestD=d; best=q; }
+      }
+      return { clipped:true, p: best };
+    }
+
+    // ---- Color mapping for the swatches (same as field) ----
+    function weightsToRgb(w){
+      // Map triangle corners to RGB corners:
+      // A=R, B=G, C=B
+      let R = w.wA, G = w.wB, B = w.wC;
+      R = clamp01(R); G = clamp01(G); B = clamp01(B);
+
+      // Saturation boost around neutral
+      const boost = Number(satBoost.value);
+      const mean = (R+G+B)/3;
+      R = clamp01(mean + (R-mean)*boost);
+      G = clamp01(mean + (G-mean)*boost);
+      B = clamp01(mean + (B-mean)*boost);
+
+      // Gentle gamma to look more “display-like”
+      const gamma = 1/2.2;
+      R = Math.pow(R, gamma);
+      G = Math.pow(G, gamma);
+      B = Math.pow(B, gamma);
+
+      return {
+        r: Math.round(R*255),
+        g: Math.round(G*255),
+        b: Math.round(B*255),
+      };
+    }
+
+    function pointToRgbToy(p){
+      const w = barycentric(p, srgbTri);
+      return weightsToRgb(w);
+    }
+
+    // ---- Draw the color field inside the sRGB triangle ----
+    // Cache the raster for each saturation value (string key).
+    const fieldCache = new Map();
+
+    function drawSrgbField(){
+      const key = Number(satBoost.value).toFixed(1);
+      const pad = 26;
+      const W = canvas.width;
+      const H = canvas.height;
+
+      // draw/cached ImageData over whole canvas (we’ll still keep axes frame)
+      let img = fieldCache.get(key);
+      if (!img){
+        img = ctx.createImageData(W, H);
+        const data = img.data;
+
+        // Precompute bounding box in pixels for the triangle area (for speed)
+        const pA = toPx(srgbTri[0]);
+        const pB = toPx(srgbTri[1]);
+        const pC = toPx(srgbTri[2]);
+
+        const minX = Math.max(0, Math.floor(Math.min(pA.x,pB.x,pC.x)) - 2);
+        const maxX = Math.min(W-1, Math.ceil(Math.max(pA.x,pB.x,pC.x)) + 2);
+        const minY = Math.max(0, Math.floor(Math.min(pA.y,pB.y,pC.y)) - 2);
+        const maxY = Math.min(H-1, Math.ceil(Math.max(pA.y,pB.y,pC.y)) + 2);
+
+        // Fill a subtle dark background everywhere
+        for (let i=0; i<data.length; i+=4){
+          data[i+0] = 10; data[i+1] = 12; data[i+2] = 14; data[i+3] = 255;
+        }
+
+        // Rasterize only inside triangle bbox
+        for (let y=minY; y<=maxY; y++){
+          for (let x=minX; x<=maxX; x++){
+            // skip outside plot frame
+            if (x < pad || x > W-pad || y < pad || y > H-pad) continue;
+
+            const p = fromPx(x, y);
+            const w = barycentric(p, srgbTri);
+            if (!insideTriWeights(w)) continue;
+
+            const rgb = weightsToRgb(w);
+
+            const idx = (y*W + x)*4;
+            data[idx+0] = rgb.r;
+            data[idx+1] = rgb.g;
+            data[idx+2] = rgb.b;
+            data[idx+3] = 255;
+          }
+        }
+
+        fieldCache.set(key, img);
+      }
+
+      ctx.putImageData(img, 0, 0);
+    }
+
+    // ---- State + render ----
+    let current = { x: 0.33, y: 0.33 };
+
+    function render(){
+      satNum.textContent = Number(satBoost.value).toFixed(1) + "×";
+
+      // Background field first
+      drawSrgbField();
+
+      // Frame + labels on top
+      drawAxes();
+
+      // Overlays
+      drawPoly(srgbTri, "rgba(255,255,255,0.85)", null, 4);
+      drawPoly(printerPoly, "rgba(124,247,212,0.90)", "rgba(124,247,212,0.08)", 4);
+
+      const clip = clipToPoly(current, printerPoly);
+
+      // Link line if clipped
+      if (clip.clipped){
+        const a = toPx(current);
+        const b = toPx(clip.p);
+        ctx.strokeStyle = "rgba(255,211,107,0.55)";
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      }
+
+      // Points
+      drawPoint(current, "rgba(255,211,107,0.95)", 8);
+      drawPoint(clip.p, "rgba(124,247,212,0.95)", 7);
+
+      xyText.textContent = `x ${current.x.toFixed(3)}, y ${current.y.toFixed(3)}`;
+      statusText.textContent = clip.clipped ? "Out-of-gamut for printer → clipped to boundary" : "Inside printer gamut ✅";
+
+      // Swatches from the same mapping
+      const rgbA = pointToRgbToy(current);
+      const rgbB = pointToRgbToy(clip.p);
+
+      swIdeal.style.background = `rgb(${rgbA.r},${rgbA.g},${rgbA.b})`;
+      swClip.style.background  = `rgb(${rgbB.r},${rgbB.g},${rgbB.b})`;
+
+      rgbIdeal.textContent = `rgb(${rgbA.r}, ${rgbA.g}, ${rgbA.b})`;
+      rgbClip.textContent  = `rgb(${rgbB.r}, ${rgbB.g}, ${rgbB.b})`;
+
+      hexIdeal.textContent = rgbToHex(rgbA.r, rgbA.g, rgbA.b);
+      hexClip.textContent  = rgbToHex(rgbB.r, rgbB.g, rgbB.b);
+    }
+
+    // ---- Drag interaction ----
+    let dragging = false;
+
+    function eventToCanvasPx(e){
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (e.clientY - rect.top)  * (canvas.height / rect.height);
+      return {x,y};
+    }
+
+    function setCurrentFromPx(px, py){
+      const p = fromPx(px, py);
+      // clamp to visible region
+      current = {
+        x: Math.max(view.xMin, Math.min(view.xMax, p.x)),
+        y: Math.max(view.yMin, Math.min(view.yMax, p.y)),
+      };
+      render();
+    }
+
+    canvas.addEventListener("pointerdown", (e) => {
+      dragging = true;
+      canvas.setPointerCapture(e.pointerId);
+      const q = eventToCanvasPx(e);
+      setCurrentFromPx(q.x, q.y);
+    });
+    canvas.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const q = eventToCanvasPx(e);
+      setCurrentFromPx(q.x, q.y);
+    });
+    canvas.addEventListener("pointerup", (e) => {
+      dragging = false;
+      try{ canvas.releasePointerCapture(e.pointerId); }catch(_){}
+    });
+
+    // ---- Buttons ----
+    function randomPointLikelyInside(){
+      for (let i=0; i<4000; i++){
+        const p = { x: Math.random()*view.xMax, y: Math.random()*view.yMax };
+        if (pointInPoly(p, printerPoly)) return p;
+      }
+      return { x: 0.33, y: 0.33 };
+    }
+    function randomPointLikelyOutside(){
+      for (let i=0; i<4000; i++){
+        const p = { x: Math.random()*view.xMax, y: Math.random()*view.yMax };
+        const w = barycentric(p, srgbTri);
+        if (insideTriWeights(w) && !pointInPoly(p, printerPoly)) return p;
+      }
+      return { x: 0.62, y: 0.20 };
+    }
+
+    document.getElementById("randInBtn").addEventListener("click", () => {
+      current = randomPointLikelyInside();
+      render();
+    });
+    document.getElementById("randOutBtn").addEventListener("click", () => {
+      current = randomPointLikelyOutside();
+      render();
+    });
+    document.getElementById("centerBtn").addEventListener("click", () => {
+      current = { x: 0.33, y: 0.33 };
+      render();
+    });
+
+    satBoost.addEventListener("input", () => {
+      // new saturation = new cached field (or re-render)
+      render();
+    });
+
+    // init
+    render();
+  </script>
+</body>
+</html>
