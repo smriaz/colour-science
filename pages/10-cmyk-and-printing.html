@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>10 — CMYK & Printing • Color Lab</title>
+  <meta name="description" content="Subtractive mixing and printing basics. Interactive CMYK sliders with simulated preview and printing-oriented explanations." />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+
+  <style>
+    .crumbs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; color: var(--muted); font-size: 13px; }
+    .crumbs a{ color: var(--text); text-decoration:none; }
+    .crumbs a:hover{ text-decoration: underline; }
+
+    .lesson-head{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
+    .lesson-head .seg{ max-width: 520px; width: 100%; }
+
+    .level-block{ display:none; }
+    html[data-level="kids"] .level-kids{ display:block; }
+    html[data-level="mid"]  .level-mid{ display:block; }
+    html[data-level="uni"]  .level-uni{ display:block; }
+
+    .callout{
+      border-left: 4px solid rgba(124,247,212,0.60);
+      padding: 12px 14px;
+      background: rgba(124,247,212,0.09);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .tryit-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 900px){ .tryit-grid{ grid-template-columns: 1fr; } }
+
+    .panel{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+
+    .control{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      margin-bottom: 10px;
+    }
+    .control label{ font-weight: 850; display:flex; justify-content:space-between; gap:10px; }
+    .control input[type="range"]{ width:100%; }
+    .hint{ font-size: 12.5px; color: var(--muted); }
+
+    .two{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 640px){ .two{ grid-template-columns: 1fr; } }
+
+    .swatch{
+      height: 160px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background:#222;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
+      position: relative;
+      overflow:hidden;
+    }
+
+    .paper{
+      background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+    }
+    .paper::after{
+      content:"";
+      position:absolute; inset:0;
+      background-image:
+        radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 12px 12px;
+      opacity: 0.30;
+      pointer-events:none;
+      mix-blend-mode: overlay;
+    }
+
+    .row{
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .mini-table{
+      width:100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.12);
+      margin-top: 10px;
+    }
+    .mini-table th, .mini-table td{
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      text-align:left;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .mini-table th{ color: rgba(255,255,255,0.82); font-weight: 850; }
+    .mini-table tr:last-child td{ border-bottom:none; }
+    .mini-table td strong{ color: var(--text); }
+
+    .note{ display:flex; gap:12px; align-items:flex-start; }
+    .note__icon{ font-size: 20px; }
+
+    .pager{
+      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .pager .btn{ min-width: 160px; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Interactive color science</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="../index.html">Home</a>
+        <a class="nav__link" href="./glossary.html">Glossary</a>
+        <a class="nav__link" href="./about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span aria-hidden="true">›</span>
+      <span>Module D — Matching & printing</span>
+      <span aria-hidden="true">›</span>
+      <strong>10 — CMYK & printing</strong>
+    </div>
+
+    <section class="card">
+      <div class="lesson-head">
+        <div>
+          <h1>10 — CMYK & printing</h1>
+          <p class="lead">
+            Screens <strong>add</strong> light (RGB). Printing uses inks that <strong>subtract</strong> light from white paper.
+            That’s why printers commonly use <strong>CMYK</strong>.
+          </p>
+        </div>
+
+        <div aria-label="Difficulty level">
+          <div class="seg" role="group" aria-label="Difficulty toggle">
+            <button class="seg__btn" type="button" data-level="kids" aria-pressed="true">Kids / Beginner</button>
+            <button class="seg__btn" type="button" data-level="mid" aria-pressed="false">Intermediate</button>
+            <button class="seg__btn" type="button" data-level="uni" aria-pressed="false">University</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" role="note">
+        <strong>Big idea:</strong> Inks work by absorbing parts of the spectrum. Paper, ink chemistry,
+        and lighting all matter — so CMYK→RGB “conversion” is only an approximation without a profile.
+      </div>
+
+      <div class="level-block level-kids">
+        <h2>Why printing feels “opposite” of screens</h2>
+        <ul>
+          <li>Paper starts bright (white).</li>
+          <li>Ink makes it darker by blocking light.</li>
+          <li>More ink usually means less light comes back to your eyes.</li>
+        </ul>
+        <p class="muted">Cyan, Magenta, Yellow are like “anti-RGB.”</p>
+      </div>
+
+      <div class="level-block level-mid">
+        <h2>Why CMYK has K (black)</h2>
+        <ul>
+          <li>CMY inks aren’t perfect; stacking them makes muddy darks.</li>
+          <li>Black ink improves shadows, detail, and reduces ink use.</li>
+          <li>In real workflows, conversion uses ICC profiles + rendering intents.</li>
+        </ul>
+      </div>
+
+      <div class="level-block level-uni">
+        <h2>Subtractive mixing and device profiles</h2>
+        <p>
+          CMYK values are device-dependent: inks, paper, dot gain, screening, and press conditions vary.
+          A meaningful CMYK↔Lab mapping requires characterization (profiles).
+        </p>
+        <p class="muted">
+          Our demo below is a simple “ink absorption” toy model for intuition, not a color-managed conversion.
+        </p>
+      </div>
+    </section>
+
+    <!-- Try it -->
+    <section class="card" aria-label="Try it">
+      <div class="section-head">
+        <h2>Try it: CMYK sliders (toy print preview)</h2>
+        <p class="muted">Adjust ink amounts and see a simulated “on paper” preview + approximate RGB.</p>
+      </div>
+
+      <div class="tryit-grid">
+        <div>
+          <div class="control">
+            <label for="c">Cyan <span class="kbd" id="cNum">0%</span></label>
+            <input id="c" type="range" min="0" max="100" step="1" value="0" />
+            <div class="hint">Cyan ink tends to absorb red light.</div>
+          </div>
+          <div class="control">
+            <label for="m">Magenta <span class="kbd" id="mNum">0%</span></label>
+            <input id="m" type="range" min="0" max="100" step="1" value="0" />
+            <div class="hint">Magenta tends to absorb green light.</div>
+          </div>
+          <div class="control">
+            <label for="y">Yellow <span class="kbd" id="yNum">0%</span></label>
+            <input id="y" type="range" min="0" max="100" step="1" value="0" />
+            <div class="hint">Yellow tends to absorb blue light.</div>
+          </div>
+          <div class="control">
+            <label for="k">Black (K) <span class="kbd" id="kNum">0%</span></label>
+            <input id="k" type="range" min="0" max="100" step="1" value="0" />
+            <div class="hint">Black ink absorbs broadly (reduces overall reflectance).</div>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn--ghost" type="button" id="presetCmy">CMY</button>
+            <button class="btn btn--ghost" type="button" id="presetRichBlack">Rich black</button>
+            <button class="btn btn--ghost" type="button" id="presetSkin">Skin-ish</button>
+            <button class="btn btn--ghost" type="button" id="randomBtn">🎲 Random</button>
+          </div>
+
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">⚠️</div>
+            <div>
+              <strong>Important:</strong> This is a simplified model. Real printing uses ICC profiles and depends on
+              paper, ink set, dot gain, and viewing illuminant.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="two">
+            <div class="panel">
+              <div class="muted" style="font-size:13px;">Simulated print on paper</div>
+              <div class="swatch paper" id="paperSw" aria-label="Paper preview swatch"></div>
+              <div class="row"><span>Feels like</span><strong id="feelText">—</strong></div>
+            </div>
+            <div class="panel">
+              <div class="muted" style="font-size:13px;">Approx screen RGB preview</div>
+              <div class="swatch" id="rgbSw" aria-label="RGB preview swatch"></div>
+              <div class="row"><span>RGB</span><strong id="rgbOut">—</strong></div>
+              <div class="row"><span>Hex</span><strong class="kbd" id="hexOut">—</strong></div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:12px;">
+            <h3 class="h4" style="margin:0 0 8px;">What’s happening (toy explanation)</h3>
+            <table class="mini-table" aria-label="Toy absorption explanation">
+              <thead>
+                <tr><th>Ink</th><th>Mostly reduces</th><th>So you see more</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>C</strong></td><td>Red</td><td>Cyan-ish (G+B)</td></tr>
+                <tr><td><strong>M</strong></td><td>Green</td><td>Magenta-ish (R+B)</td></tr>
+                <tr><td><strong>Y</strong></td><td>Blue</td><td>Yellow-ish (R+G)</td></tr>
+                <tr><td><strong>K</strong></td><td>All</td><td>Darker</td></tr>
+              </tbody>
+            </table>
+            <p class="tiny muted" style="margin-top:10px;">
+              Real inks have complex spectral curves; “mostly reduces” is a simplification.
+            </p>
+          </div>
+
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">🖨️</div>
+            <div>
+              <strong>Printing vocabulary:</strong> “Dot gain” and “paper white” strongly affect appearance.
+              Two printers can produce different colors from the same CMYK numbers.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Recap">
+      <div class="section-head">
+        <h2>What you learned</h2>
+        <p class="muted">Short recap.</p>
+      </div>
+      <ul>
+        <li>Printing is <strong>subtractive</strong> mixing: inks absorb light from paper.</li>
+        <li>CMYK includes black (K) for better darks and efficiency.</li>
+        <li>CMYK is device-dependent — profiles are needed for accurate conversions.</li>
+      </ul>
+    </section>
+
+    <nav class="pager" aria-label="Lesson navigation">
+      <a class="btn btn--ghost" href="./09-color-matching.html">← Previous: Color matching</a>
+      <a class="btn" href="../index.html">🏠 Home</a>
+      <a class="btn btn--primary" href="./11-gamut.html">Next: Color gamuts →</a>
+    </nav>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">Up next: Color gamuts</div>
+          <div class="muted">Why some colors are out-of-gamut for screens or printers.</div>
+        </div>
+        <div class="footer__right">
+          <a class="btn btn--small" href="./11-gamut.html">Continue</a>
+        </div>
+      </div>
+      <div class="tiny muted">Level setting is saved only in your browser (no account, no tracking).</div>
+    </footer>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+    function clamp255(x){ return Math.max(0, Math.min(255, x)); }
+    function hex2(n){ return n.toString(16).padStart(2,"0"); }
+    function rgbToHex(r,g,b){ return ("#" + hex2(r) + hex2(g) + hex2(b)).toUpperCase(); }
+
+    // Toy "ink absorption" model:
+    // Think of paper reflectance as 1. Inks multiply reflectance per channel.
+    // C reduces R, M reduces G, Y reduces B. K reduces all.
+    // We use a nonlinear curve to feel a bit more ink-like.
+    function channelAfterInk(base, inkAmt, strength){
+      // base in [0..1], inkAmt in [0..1]
+      // multiplicative absorption: base * (1 - strength*inkAmt)^gamma
+      const gamma = 1.4;
+      const t = clamp01(1 - strength * inkAmt);
+      return base * Math.pow(t, gamma);
+    }
+
+    function cmykToRgbToy(C,M,Y,K){
+      // C,M,Y,K in [0..1]
+      let r = 1, g = 1, b = 1; // paper white
+      // ink strengths (toy)
+      r = channelAfterInk(r, C, 0.95);
+      g = channelAfterInk(g, M, 0.95);
+      b = channelAfterInk(b, Y, 0.95);
+
+      // black reduces all (broad absorption)
+      r = channelAfterInk(r, K, 0.90);
+      g = channelAfterInk(g, K, 0.90);
+      b = channelAfterInk(b, K, 0.90);
+
+      // slight "paper tint" (warm paper) for a print feel
+      const paperWarm = { r: 1.00, g: 0.99, b: 0.97 };
+      r *= paperWarm.r;
+      g *= paperWarm.g;
+      b *= paperWarm.b;
+
+      return {
+        r: Math.round(clamp01(r) * 255),
+        g: Math.round(clamp01(g) * 255),
+        b: Math.round(clamp01(b) * 255),
+      };
+    }
+
+    function feelFromCmyk(C,M,Y,K){
+      const total = C+M+Y+K;
+      if (K > 0.75) return "Deep / shadowy";
+      if (total < 0.20) return "Very light (near paper white)";
+      if (C > 0.6 && M < 0.2 && Y < 0.2) return "Cyan-ish";
+      if (M > 0.6 && C < 0.2 && Y < 0.2) return "Magenta-ish";
+      if (Y > 0.6 && C < 0.2 && M < 0.2) return "Yellow-ish";
+      if (C > 0.4 && M > 0.4 && Y < 0.2) return "Blue/Purple-ish";
+      if (C > 0.4 && Y > 0.4 && M < 0.2) return "Green-ish";
+      if (M > 0.4 && Y > 0.4 && C < 0.2) return "Red/Orange-ish";
+      return "Mixed ink color";
+    }
+
+    const c = document.getElementById("c");
+    const m = document.getElementById("m");
+    const y = document.getElementById("y");
+    const k = document.getElementById("k");
+
+    const cNum = document.getElementById("cNum");
+    const mNum = document.getElementById("mNum");
+    const yNum = document.getElementById("yNum");
+    const kNum = document.getElementById("kNum");
+
+    const paperSw = document.getElementById("paperSw");
+    const rgbSw = document.getElementById("rgbSw");
+    const rgbOut = document.getElementById("rgbOut");
+    const hexOut = document.getElementById("hexOut");
+    const feelText = document.getElementById("feelText");
+
+    function setCmyk(C,M,Y,K){
+      c.value = Math.round(C*100);
+      m.value = Math.round(M*100);
+      y.value = Math.round(Y*100);
+      k.value = Math.round(K*100);
+      render();
+    }
+
+    function render(){
+      const C = Number(c.value)/100;
+      const M = Number(m.value)/100;
+      const Y = Number(y.value)/100;
+      const K = Number(k.value)/100;
+
+      cNum.textContent = Math.round(C*100) + "%";
+      mNum.textContent = Math.round(M*100) + "%";
+      yNum.textContent = Math.round(Y*100) + "%";
+      kNum.textContent = Math.round(K*100) + "%";
+
+      const rgb = cmykToRgbToy(C,M,Y,K);
+      const hex = rgbToHex(rgb.r,rgb.g,rgb.b);
+
+      // Both swatches show the same RGB (we can't truly render spectral print),
+      // but the "paper" one has a paper texture overlay to signal the idea.
+      paperSw.style.background = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+      rgbSw.style.background = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+
+      rgbOut.textContent = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+      hexOut.textContent = hex;
+
+      feelText.textContent = feelFromCmyk(C,M,Y,K);
+    }
+
+    [c,m,y,k].forEach(el => el.addEventListener("input", render));
+
+    document.getElementById("presetCmy").addEventListener("click", () => setCmyk(1,1,1,0));
+    document.getElementById("presetRichBlack").addEventListener("click", () => setCmyk(0.60,0.50,0.50,0.85));
+    document.getElementById("presetSkin").addEventListener("click", () => setCmyk(0.00,0.25,0.40,0.05));
+    document.getElementById("randomBtn").addEventListener("click", () => {
+      setCmyk(Math.random(), Math.random(), Math.random(), Math.random()*0.8);
+    });
+
+    // init
+    render();
+  </script>
+</body>
+</html>
