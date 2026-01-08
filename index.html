@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Color Lab — Interactive Color Science Tutorial</title>
+  <meta name="description" content="A playful, web-based interactive tutorial for color science: from school to university." />
+  <link rel="stylesheet" href="./assets/css/base.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Playful color science — from first steps to deep dives</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link nav__link--active" href="./index.html">Home</a>
+        <a class="nav__link" href="./pages/glossary.html">Glossary</a>
+        <a class="nav__link" href="./pages/about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <section class="hero card">
+      <div class="hero__grid">
+        <div>
+          <h1>Welcome to Color Lab</h1>
+          <p class="lead">
+            Learn how color works in <strong>eyes</strong>, <strong>screens</strong>, and <strong>printing</strong> —
+            with interactive sliders, mini-challenges, and quick quizzes.
+          </p>
+
+          <div class="pill-row" role="list" aria-label="Highlights">
+            <span class="pill" role="listitem">👁️ Vision science</span>
+            <span class="pill" role="listitem">🖥️ Digital color (RGB)</span>
+            <span class="pill" role="listitem">🖨️ Printing (CMYK & ink)</span>
+            <span class="pill" role="listitem">🧩 Challenges</span>
+          </div>
+
+          <div class="hero__cta">
+            <a class="btn btn--primary" href="./pages/01-foundations.html">Start: Foundations →</a>
+            <button class="btn btn--ghost" id="openMapBtn" type="button">Course map</button>
+          </div>
+
+          <p class="tiny">
+            Tip: Use the difficulty toggle to reveal more detail as you go.
+          </p>
+        </div>
+
+        <aside class="hero__panel" aria-label="Difficulty level">
+          <h2 class="h3">Choose your level</h2>
+          <p class="muted">You can switch anytime. Pages will show extra sections.</p>
+
+          <div class="seg" role="group" aria-label="Difficulty toggle">
+            <button class="seg__btn" type="button" data-level="kids" aria-pressed="true">Kids / Beginner</button>
+            <button class="seg__btn" type="button" data-level="mid" aria-pressed="false">Intermediate</button>
+            <button class="seg__btn" type="button" data-level="uni" aria-pressed="false">University</button>
+          </div>
+
+          <div class="mini card card--inset">
+            <div class="mini__title">What changes with level?</div>
+            <ul class="mini__list">
+              <li><strong>Kids:</strong> pictures, simple language</li>
+              <li><strong>Intermediate:</strong> practical rules + examples</li>
+              <li><strong>University:</strong> equations, models, caveats</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="card" id="courseMap" aria-label="Course map">
+      <div class="section-head">
+        <h2>Course map</h2>
+        <p class="muted">A friendly path, with optional deep dives.</p>
+      </div>
+
+      <div class="grid">
+        <article class="module card card--hover">
+          <div class="module__icon" aria-hidden="true">🌈</div>
+          <h3>Module A — Basics</h3>
+          <p>What is color, really? Light, spectra, and the human eye.</p>
+          <ol class="linklist">
+            <li><a href="./pages/01-foundations.html">01 — Foundations: What is color?</a></li>
+            <li><a href="./pages/02-light-and-spectra.html">02 — Light & spectra</a></li>
+            <li><a href="./pages/03-human-vision.html">03 — Human vision (cones & opponent channels)</a></li>
+          </ol>
+        </article>
+
+        <article class="module card card--hover">
+          <div class="module__icon" aria-hidden="true">🧪</div>
+          <h3>Module B — Digital color</h3>
+          <p>RGB, sRGB, gamma, and why “mixing” can be tricky.</p>
+          <ol class="linklist">
+            <li><a href="./pages/04-rgb-and-displays.html">04 — RGB & displays (additive mixing)</a></li>
+            <li><a href="./pages/05-gamma-and-linear.html">05 — Gamma & linear light</a></li>
+            <li><a href="./pages/06-color-picking.html">06 — Color picking (hex, HSL/HSV)</a></li>
+          </ol>
+        </article>
+
+        <article class="module card card--hover">
+          <div class="module__icon" aria-hidden="true">📐</div>
+          <h3>Module C — Models & conversion</h3>
+          <p>XYZ/Lab, color differences, and “perceptual” spaces.</p>
+          <ol class="linklist">
+            <li><a href="./pages/07-xyz-and-lab.html">07 — CIEXYZ & Lab</a></li>
+            <li><a href="./pages/08-color-difference.html">08 — Color difference (ΔE)</a></li>
+            <li><a href="./pages/09-color-matching.html">09 — Color matching & metamerism</a></li>
+          </ol>
+        </article>
+
+        <article class="module card card--hover">
+          <div class="module__icon" aria-hidden="true">🖨️</div>
+          <h3>Module D — Printing</h3>
+          <p>Ink is not light. Subtractive mixing, CMYK, paper, and limits.</p>
+          <ol class="linklist">
+            <li><a href="./pages/10-subtractive-mixing.html">10 — Subtractive mixing (filters & inks)</a></li>
+            <li><a href="./pages/11-cmyk-and-printing.html">11 — CMYK printing basics</a></li>
+            <li><a href="./pages/12-gamut.html">12 — Gamut: what can/can’t be printed</a></li>
+          </ol>
+        </article>
+
+        <article class="module card card--hover">
+          <div class="module__icon" aria-hidden="true">🎯</div>
+          <h3>Module E — Challenges</h3>
+          <p>Play to learn: matching, mixing puzzles, and “spot the difference.”</p>
+          <ol class="linklist">
+            <li><a href="./pages/13-challenges.html">13 — Challenge hub</a></li>
+            <li><a href="./pages/14-applications.html">14 — Applications: vision + print + screens</a></li>
+          </ol>
+        </article>
+
+        <article class="module card card--hover">
+          <div class="module__icon" aria-hidden="true">📚</div>
+          <h3>Support pages</h3>
+          <p>Definitions, credits, and references.</p>
+          <ol class="linklist">
+            <li><a href="./pages/glossary.html">Glossary</a></li>
+            <li><a href="./pages/about.html">About & references</a></li>
+          </ol>
+        </article>
+      </div>
+
+      <div class="note card card--inset" role="note">
+        <div class="note__icon" aria-hidden="true">✨</div>
+        <div>
+          <strong>Heads up:</strong> some pages listed above don’t exist yet — we’ll create them one by one.
+          Links are already placed so the structure is ready.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>How this tutorial is built</h2>
+        <p class="muted">Vanilla HTML/CSS/JS — GitHub Pages friendly.</p>
+      </div>
+
+      <div class="two-col">
+        <div class="card card--inset">
+          <h3 class="h4">What you’ll find on each lesson page</h3>
+          <ul>
+            <li>Quick explanation (with level toggle)</li>
+            <li>Interactive “Try it” widget</li>
+            <li>Mini-check quiz (instant feedback)</li>
+            <li>Prev / Home / Next navigation</li>
+          </ul>
+        </div>
+
+        <div class="card card--inset">
+          <h3 class="h4">Accessibility promise</h3>
+          <ul>
+            <li>No meaning conveyed by color alone</li>
+            <li>Clear labels + patterns</li>
+            <li>Keyboard-friendly controls</li>
+            <li>(Later) optional color-vision simulation</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">Color Lab</div>
+          <div class="muted">Made for learning. Hosted on GitHub Pages.</div>
+        </div>
+
+        <div class="footer__right">
+          <a class="btn btn--small" href="./pages/01-foundations.html">Start Foundations</a>
+          <a class="btn btn--small btn--ghost" href="./pages/about.html">References</a>
+        </div>
+      </div>
+      <div class="tiny muted">
+        Level setting is saved only in your browser (no account, no tracking).
+      </div>
+    </footer>
+  </main>
+
+  <script src="./assets/js/app.js"></script>
+</body>
+</html>
