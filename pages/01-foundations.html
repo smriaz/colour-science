@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>01 — Foundations: What is color? • Color Lab</title>
+  <meta name="description" content="Foundations of color science: color as light + observer + context, with a simple interactive demo." />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+
+  <style>
+    /* Lesson-specific helpers (kept small and local) */
+    .crumbs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; color: var(--muted); font-size: 13px; }
+    .crumbs a{ color: var(--text); text-decoration:none; }
+    .crumbs a:hover{ text-decoration: underline; }
+
+    .lesson-head{
+      display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;
+    }
+    .lesson-head .seg{ max-width: 520px; width: 100%; }
+
+    .callout{
+      border-left: 4px solid rgba(124,247,212,0.55);
+      padding: 12px 14px;
+      background: rgba(124,247,212,0.08);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .level-block{ display:none; }
+    html[data-level="kids"] .level-kids{ display:block; }
+    html[data-level="mid"]  .level-mid{ display:block; }
+    html[data-level="uni"]  .level-uni{ display:block; }
+
+    .tryit-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .tryit-grid{ grid-template-columns: 1fr; }
+    }
+
+    .patch-row{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .patch{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+    .swatch{
+      height: 92px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #222;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
+    }
+    .patch .label{
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .control{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      margin-bottom: 10px;
+    }
+    .control label{ font-weight: 750; }
+    .control input[type="range"]{ width:100%; }
+    .control .hint{ font-size: 12.5px; color: var(--muted); }
+
+    .quiz{
+      display:grid;
+      gap: 10px;
+    }
+    .q{
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+    }
+    .q legend{ font-weight: 800; padding: 0 6px; }
+    .q .opts{ display:grid; gap:8px; margin-top: 8px; }
+    .q label{ display:flex; gap:10px; align-items:flex-start; cursor:pointer; }
+    .q input{ margin-top: 3px; }
+
+    .result{
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,211,107,0.10);
+    }
+
+    .pager{
+      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .pager .btn{ min-width: 160px; }
+    .btn[aria-disabled="true"]{ opacity:0.55; pointer-events:none; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Interactive color science</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="../index.html">Home</a>
+        <a class="nav__link" href="./glossary.html">Glossary</a>
+        <a class="nav__link" href="./about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span aria-hidden="true">›</span>
+      <span>Module A — Basics</span>
+      <span aria-hidden="true">›</span>
+      <strong>01 — Foundations</strong>
+    </div>
+
+    <section class="card">
+      <div class="lesson-head">
+        <div>
+          <h1>01 — Foundations: What is color?</h1>
+          <p class="lead">
+            Color isn’t a “thing” inside objects. It’s something your brain builds from
+            <strong>light</strong>, your <strong>visual system</strong>, and the <strong>context</strong>.
+          </p>
+        </div>
+
+        <div aria-label="Difficulty level">
+          <div class="seg" role="group" aria-label="Difficulty toggle">
+            <button class="seg__btn" type="button" data-level="kids" aria-pressed="true">Kids / Beginner</button>
+            <button class="seg__btn" type="button" data-level="mid" aria-pressed="false">Intermediate</button>
+            <button class="seg__btn" type="button" data-level="uni" aria-pressed="false">University</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" role="note">
+        <strong>Big idea:</strong> what you see depends on the <em>light shining on the object</em> and how the object
+        <em>reflects or absorbs</em> that light — plus how your eye/brain interprets it.
+      </div>
+
+      <!-- Kids -->
+      <div class="level-block level-kids">
+        <h2>Color is a teamwork thing</h2>
+        <ul>
+          <li><strong>Light</strong> comes in many kinds (like a rainbow).</li>
+          <li><strong>Objects</strong> soak up some kinds of light and bounce others.</li>
+          <li><strong>Your eyes + brain</strong> turn that bounced light into “color.”</li>
+        </ul>
+        <p class="muted">
+          Example: A red apple looks red in white light… but under blue light it can look dark or strange.
+        </p>
+      </div>
+
+      <!-- Intermediate -->
+      <div class="level-block level-mid">
+        <h2>Color depends on illumination</h2>
+        <p>
+          We often say “this object is red,” but what we really mean is:
+          <strong>under typical lighting</strong> it reflects more long-wavelength (reddish) light than other wavelengths.
+        </p>
+        <ul>
+          <li><strong>Illuminant:</strong> the spectrum of the light source.</li>
+          <li><strong>Reflectance:</strong> how the surface reflects each wavelength.</li>
+          <li><strong>Perception:</strong> your cone responses + brain processing.</li>
+        </ul>
+      </div>
+
+      <!-- University -->
+      <div class="level-block level-uni">
+        <h2>Color as an interaction: spectrum → cones → perception</h2>
+        <p>
+          A simplified pipeline is:
+          <strong>spectral power distribution</strong> (light) × <strong>surface reflectance</strong> → retinal stimulus →
+          <strong>cone excitations</strong> (L, M, S) → opponent processing → appearance.
+        </p>
+        <p class="muted">
+          This is why different spectra can sometimes look identical (metamerism) and why printing (ink spectra) can be tricky.
+        </p>
+      </div>
+    </section>
+
+    <!-- Try it (after explanation, as you requested) -->
+    <section class="card" aria-label="Try it">
+      <div class="section-head">
+        <h2>Try it: Light × Object = What you see</h2>
+        <p class="muted">A playful (simplified) model: object reflectance “filters” the light.</p>
+      </div>
+
+      <div class="tryit-grid">
+        <div>
+          <div class="control">
+            <label for="lightHue">Light color (hue)</label>
+            <input id="lightHue" type="range" min="0" max="360" step="1" value="55" />
+            <div class="hint">Try “yellowish room light” (~55) vs “bluish sky light” (~210).</div>
+          </div>
+
+          <div class="control">
+            <label for="objHue">Object “reflectance” (hue)</label>
+            <input id="objHue" type="range" min="0" max="360" step="1" value="10" />
+            <div class="hint">Think “red paint” (~10) or “green leaf” (~120).</div>
+          </div>
+
+          <div class="control">
+            <label for="strength">How strong is the object’s color?</label>
+            <input id="strength" type="range" min="0" max="100" step="1" value="80" />
+            <div class="hint">0 = almost gray/white surface, 100 = strongly colored surface.</div>
+          </div>
+
+          <button class="btn btn--ghost" id="randomizeBtn" type="button">🎲 Randomize</button>
+        </div>
+
+        <div>
+          <div class="patch-row" aria-label="Color patches">
+            <div class="patch">
+              <div class="swatch" id="swLight" aria-label="Light color patch"></div>
+              <div class="label">
+                <span>Light</span>
+                <span id="txtLight">—</span>
+              </div>
+            </div>
+
+            <div class="patch">
+              <div class="swatch" id="swObj" aria-label="Object reflectance patch"></div>
+              <div class="label">
+                <span>Object</span>
+                <span id="txtObj">—</span>
+              </div>
+            </div>
+
+            <div class="patch">
+              <div class="swatch" id="swSeen" aria-label="What you see patch"></div>
+              <div class="label">
+                <span>You see</span>
+                <span id="txtSeen">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">👁️</div>
+            <div>
+              <strong>Vision science hint:</strong> your brain tries to keep object colors “stable” across lighting
+              (color constancy). This demo does <em>not</em> include that — it shows the raw “light × surface” idea.
+            </div>
+          </div>
+
+          <div class="note card card--inset" role="note">
+            <div class="note__icon" aria-hidden="true">🖨️</div>
+            <div>
+              <strong>Printing hint:</strong> inks work by absorbing parts of the spectrum. That’s why ink mixing is
+              different from mixing colored lights on a screen.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mini check -->
+    <section class="card" aria-label="Quick check">
+      <div class="section-head">
+        <h2>Quick check</h2>
+        <p class="muted">Two tiny questions — instant feedback.</p>
+      </div>
+
+      <form class="quiz" id="quizForm">
+        <fieldset class="q">
+          <legend>1) An object looks different under a different lamp mainly because…</legend>
+          <div class="opts">
+            <label><input type="radio" name="q1" value="a" /> the object changes shape</label>
+            <label><input type="radio" name="q1" value="b" /> the light spectrum changes, so what gets reflected changes</label>
+            <label><input type="radio" name="q1" value="c" /> colors are stored inside objects and never depend on light</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="q">
+          <legend>2) Printing inks mix like screen lights because they both add light together.</legend>
+          <div class="opts">
+            <label><input type="radio" name="q2" value="true" /> True</label>
+            <label><input type="radio" name="q2" value="false" /> False</label>
+          </div>
+        </fieldset>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn--primary" type="submit">Check answers</button>
+          <button class="btn btn--ghost" type="button" id="resetQuizBtn">Reset</button>
+        </div>
+
+        <div class="result" id="quizResult" role="status" aria-live="polite" hidden></div>
+      </form>
+    </section>
+
+    <nav class="pager" aria-label="Lesson navigation">
+      <a class="btn btn--ghost" href="#" aria-disabled="true">← Previous</a>
+      <a class="btn" href="../index.html">🏠 Home</a>
+      <a class="btn btn--primary" href="./02-light-and-spectra.html">Next: Light & spectra →</a>
+    </nav>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">You finished Foundations</div>
+          <div class="muted">Next we’ll look at light and spectra — the “ingredients” of color.</div>
+        </div>
+        <div class="footer__right">
+          <a class="btn btn--small" href="./02-light-and-spectra.html">Continue</a>
+        </div>
+      </div>
+      <div class="tiny muted">
+        Level setting is saved only in your browser (no account, no tracking).
+      </div>
+    </footer>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    // --- Tiny color helpers (HSL -> RGB, multiply, formatting) ---
+    function hslToRgb(h, s, l){
+      // h: 0..360, s/l: 0..1
+      h = ((h % 360) + 360) % 360;
+      const c = (1 - Math.abs(2*l - 1)) * s;
+      const hp = h / 60;
+      const x = c * (1 - Math.abs((hp % 2) - 1));
+      let r1=0,g1=0,b1=0;
+      if (0 <= hp && hp < 1) { r1=c; g1=x; b1=0; }
+      else if (1 <= hp && hp < 2) { r1=x; g1=c; b1=0; }
+      else if (2 <= hp && hp < 3) { r1=0; g1=c; b1=x; }
+      else if (3 <= hp && hp < 4) { r1=0; g1=x; b1=c; }
+      else if (4 <= hp && hp < 5) { r1=x; g1=0; b1=c; }
+      else { r1=c; g1=0; b1=x; }
+      const m = l - c/2;
+      const r = Math.round((r1 + m) * 255);
+      const g = Math.round((g1 + m) * 255);
+      const b = Math.round((b1 + m) * 255);
+      return {r, g, b};
+    }
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+    function rgbToCss({r,g,b}){ return `rgb(${r}, ${g}, ${b})`; }
+    function rgbMultiply(a, b){
+      // Simplified "filter": channel-wise multiply in 0..1, then back to 0..255
+      const ar=a.r/255, ag=a.g/255, ab=a.b/255;
+      const br=b.r/255, bg=b.g/255, bb=b.b/255;
+      return {
+        r: Math.round(clamp01(ar*br)*255),
+        g: Math.round(clamp01(ag*bg)*255),
+        b: Math.round(clamp01(ab*bb)*255),
+      };
+    }
+    function hex2(n){ return n.toString(16).padStart(2,"0"); }
+    function rgbToHex({r,g,b}){ return `#${hex2(r)}${hex2(g)}${hex2(b)}`.toUpperCase(); }
+
+    // --- Try it widget logic ---
+    const lightHue = document.getElementById("lightHue");
+    const objHue = document.getElementById("objHue");
+    const strength = document.getElementById("strength");
+    const randomizeBtn = document.getElementById("randomizeBtn");
+
+    const swLight = document.getElementById("swLight");
+    const swObj = document.getElementById("swObj");
+    const swSeen = document.getElementById("swSeen");
+    const txtLight = document.getElementById("txtLight");
+    const txtObj = document.getElementById("txtObj");
+    const txtSeen = document.getElementById("txtSeen");
+
+    function render(){
+      // Light: saturated, medium lightness
+      const L = hslToRgb(Number(lightHue.value), 0.95, 0.55);
+
+      // Object reflectance: mix colored reflectance with "white-ish" depending on strength
+      const s = Number(strength.value) / 100; // 0..1
+      const colored = hslToRgb(Number(objHue.value), 0.95, 0.52);
+      const whiteish = {r: 245, g: 245, b: 245};
+      const O = {
+        r: Math.round(whiteish.r*(1-s) + colored.r*s),
+        g: Math.round(whiteish.g*(1-s) + colored.g*s),
+        b: Math.round(whiteish.b*(1-s) + colored.b*s),
+      };
+
+      const Seen = rgbMultiply(L, O);
+
+      swLight.style.background = rgbToCss(L);
+      swObj.style.background = rgbToCss(O);
+      swSeen.style.background = rgbToCss(Seen);
+
+      txtLight.textContent = rgbToHex(L);
+      txtObj.textContent = rgbToHex(O);
+      txtSeen.textContent = rgbToHex(Seen);
+    }
+
+    [lightHue, objHue, strength].forEach(el => el.addEventListener("input", render));
+    randomizeBtn.addEventListener("click", () => {
+      lightHue.value = String(Math.floor(Math.random()*361));
+      objHue.value = String(Math.floor(Math.random()*361));
+      strength.value = String(40 + Math.floor(Math.random()*61));
+      render();
+    });
+    render();
+
+    // --- Mini quiz logic ---
+    const quizForm = document.getElementById("quizForm");
+    const quizResult = document.getElementById("quizResult");
+    const resetQuizBtn = document.getElementById("resetQuizBtn");
+
+    quizForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const q1 = new FormData(quizForm).get("q1");
+      const q2 = new FormData(quizForm).get("q2");
+
+      let score = 0;
+      const messages = [];
+
+      if (q1 === "b") { score++; messages.push("✅ Q1: Right — changing the light changes what gets reflected."); }
+      else messages.push("❌ Q1: The best answer is: the light spectrum changes, so reflected light changes.");
+
+      if (q2 === "false") { score++; messages.push("✅ Q2: Right — inks mostly subtract/absorb light (subtractive mixing)."); }
+      else messages.push("❌ Q2: Inks don’t add light like screens; they absorb parts of it.");
+
+      quizResult.hidden = false;
+      quizResult.innerHTML = `<strong>Score: ${score}/2</strong><div style="margin-top:8px; color: var(--muted);">${messages.join("<br>")}</div>`;
+    });
+
+    resetQuizBtn.addEventListener("click", () => {
+      quizForm.reset();
+      quizResult.hidden = true;
+      quizResult.textContent = "";
+    });
+  </script>
+</body>
+</html>
