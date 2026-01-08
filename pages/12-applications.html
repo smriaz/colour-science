@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>12 — Applications • Color Lab</title>
+  <meta name="description" content="Real-world applications of color science in vision and printing: color constancy, adaptation, camera pipelines, proofing, and accessibility." />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+
+  <style>
+    .crumbs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; color: var(--muted); font-size: 13px; }
+    .crumbs a{ color: var(--text); text-decoration:none; }
+    .crumbs a:hover{ text-decoration: underline; }
+
+    .lesson-head{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
+    .lesson-head .seg{ max-width: 520px; width: 100%; }
+
+    .level-block{ display:none; }
+    html[data-level="kids"] .level-kids{ display:block; }
+    html[data-level="mid"]  .level-mid{ display:block; }
+    html[data-level="uni"]  .level-uni{ display:block; }
+
+    .callout{
+      border-left: 4px solid rgba(124,247,212,0.60);
+      padding: 12px 14px;
+      background: rgba(124,247,212,0.09);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
+
+    .panel{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+
+    .tabs{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    .tabbtn{
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 8px 12px;
+      cursor:pointer;
+      font-weight: 900;
+      font-size: 13px;
+      color: var(--text);
+    }
+    .tabbtn[aria-selected="true"]{
+      background: rgba(124,247,212,0.14);
+      border-color: rgba(124,247,212,0.55);
+    }
+
+    .tabpage{ display:none; }
+    .tabpage.active{ display:block; }
+
+    .control{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      margin-bottom: 10px;
+    }
+    .control label{ font-weight: 850; display:flex; justify-content:space-between; gap:10px; }
+    .control input[type="range"]{ width:100%; }
+    .hint{ font-size: 12.5px; color: var(--muted); }
+
+    .two{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 640px){ .two{ grid-template-columns: 1fr; } }
+
+    .swatch{
+      height: 150px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background:#222;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
+    }
+
+    .row{
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    canvas{
+      width:100%;
+      height:220px;
+      display:block;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.14);
+    }
+
+    .note{ display:flex; gap:12px; align-items:flex-start; }
+    .note__icon{ font-size: 20px; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      font-weight: 900;
+      font-size: 13px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .pager{
+      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .pager .btn{ min-width: 160px; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Interactive color science</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="../index.html">Home</a>
+        <a class="nav__link" href="./glossary.html">Glossary</a>
+        <a class="nav__link" href="./about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span aria-hidden="true">›</span>
+      <span>Module E — Real-world</span>
+      <span aria-hidden="true">›</span>
+      <strong>12 — Applications</strong>
+    </div>
+
+    <section class="card">
+      <div class="lesson-head">
+        <div>
+          <h1>12 — Applications</h1>
+          <p class="lead">
+            Color science shows up everywhere: how your eyes adapt to lighting, how cameras process images,
+            how printers make reliable proofs, and how we design for accessibility.
+          </p>
+        </div>
+
+        <div aria-label="Difficulty level">
+          <div class="seg" role="group" aria-label="Difficulty toggle">
+            <button class="seg__btn" type="button" data-level="kids" aria-pressed="true">Kids / Beginner</button>
+            <button class="seg__btn" type="button" data-level="mid" aria-pressed="false">Intermediate</button>
+            <button class="seg__btn" type="button" data-level="uni" aria-pressed="false">University</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" role="note">
+        <strong>Big idea:</strong> “The color” is not just a property of an object.
+        It depends on <strong>illumination</strong>, <strong>materials</strong>, <strong>devices</strong>, and <strong>human vision</strong>.
+      </div>
+
+      <div class="level-block level-kids">
+        <h2>Four places you meet color science</h2>
+        <ul>
+          <li><strong>Eyes:</strong> your brain adjusts to different light.</li>
+          <li><strong>Cameras:</strong> they guess white balance.</li>
+          <li><strong>Printing:</strong> proofs help predict final color on paper.</li>
+          <li><strong>Design:</strong> not everyone sees color the same way.</li>
+        </ul>
+      </div>
+
+      <div class="level-block level-mid">
+        <h2>Practical wins</h2>
+        <ul>
+          <li>Make photos look consistent across lighting (white balance, adaptation).</li>
+          <li>Match brand colors across screens and printers (profiles, ΔE tolerances).</li>
+          <li>Design UIs that remain readable for more people (contrast + redundancy).</li>
+        </ul>
+      </div>
+
+      <div class="level-block level-uni">
+        <h2>When “ground truth” is tricky</h2>
+        <p>
+          There’s no single absolute “correct” color without specifying viewing conditions.
+          In printing: D50 viewing, standard observers, and profiling define a workable reference.
+          In vision: adaptation and context mean perception can shift even for identical pixels.
+        </p>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Interactive applications">
+      <div class="section-head">
+        <h2>Pick an application to explore</h2>
+        <p class="muted">Each section starts with an explanation, then a hands-on mini demo.</p>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Application tabs">
+        <button class="tabbtn" role="tab" aria-selected="true" aria-controls="tab-constancy" id="t-constancy">👁️ Constancy</button>
+        <button class="tabbtn" role="tab" aria-selected="false" aria-controls="tab-camera" id="t-camera">📷 Camera WB</button>
+        <button class="tabbtn" role="tab" aria-selected="false" aria-controls="tab-print" id="t-print">🖨️ Proofing</button>
+        <button class="tabbtn" role="tab" aria-selected="false" aria-controls="tab-access" id="t-access">🧩 Accessibility</button>
+      </div>
+
+      <div class="grid" style="margin-top:12px;">
+        <!-- LEFT: explanation + controls -->
+        <div>
+          <!-- Constancy -->
+          <div class="tabpage active" id="tab-constancy" role="tabpanel" aria-labelledby="t-constancy">
+            <div class="panel">
+              <h3 style="margin:0 0 6px;">Color constancy (vision)</h3>
+              <p class="muted" style="margin:0;">
+                Your visual system partly “discounts” the illuminant. That’s why a white shirt looks white in sunlight
+                and also under warm indoor lighting — even though the pixels (spectra) differ.
+              </p>
+              <div class="note card card--inset" role="note" style="margin-top:12px;">
+                <div class="note__icon" aria-hidden="true">🧠</div>
+                <div><strong>Key idea:</strong> perception depends on context. Surrounding colors affect what you see.</div>
+              </div>
+            </div>
+
+            <div class="control" style="margin-top:12px;">
+              <label for="ill">Illuminant tint <span class="kbd" id="illNum">warm</span></label>
+              <input id="ill" type="range" min="-100" max="100" step="1" value="35" />
+              <div class="hint">Move toward warm (yellow) or cool (blue) “lighting.”</div>
+            </div>
+
+            <div class="control">
+              <label for="adapt">Adaptation strength <span class="kbd" id="adaptNum">70%</span></label>
+              <input id="adapt" type="range" min="0" max="100" step="1" value="70" />
+              <div class="hint">0% = no constancy. 100% = strong compensation.</div>
+            </div>
+          </div>
+
+          <!-- Camera WB -->
+          <div class="tabpage" id="tab-camera" role="tabpanel" aria-labelledby="t-camera">
+            <div class="panel">
+              <h3 style="margin:0 0 6px;">Camera white balance (WB)</h3>
+              <p class="muted" style="margin:0;">
+                Cameras estimate the illuminant and apply gains to R/G/B so neutrals look neutral.
+                If WB is wrong, whites look tinted.
+              </p>
+              <div class="row">
+                <span class="badge">Pipeline idea</span>
+                <strong class="muted">sensor → WB → tone/gamut → display</strong>
+              </div>
+            </div>
+
+            <div class="control" style="margin-top:12px;">
+              <label for="wbTemp">WB “temperature” <span class="kbd" id="wbTempNum">5200K-ish</span></label>
+              <input id="wbTemp" type="range" min="-100" max="100" step="1" value="0" />
+              <div class="hint">Move toward warm/cool correction.</div>
+            </div>
+
+            <div class="control">
+              <label for="wbTint">WB “tint” <span class="kbd" id="wbTintNum">0</span></label>
+              <input id="wbTint" type="range" min="-100" max="100" step="1" value="0" />
+              <div class="hint">Green ↔ magenta correction (common in WB UI).</div>
+            </div>
+          </div>
+
+          <!-- Print proofing -->
+          <div class="tabpage" id="tab-print" role="tabpanel" aria-labelledby="t-print">
+            <div class="panel">
+              <h3 style="margin:0 0 6px;">Print proofing & tolerances</h3>
+              <p class="muted" style="margin:0;">
+                Proofing tries to predict how colors will look on a specific press/paper.
+                If a color is out-of-gamut, it must be mapped. QA often uses ΔE thresholds.
+              </p>
+              <div class="note card card--inset" role="note" style="margin-top:12px;">
+                <div class="note__icon" aria-hidden="true">📏</div>
+                <div><strong>QA idea:</strong> “Is this close enough?” becomes a number (ΔE) plus a spec.</div>
+              </div>
+            </div>
+
+            <div class="control" style="margin-top:12px;">
+              <label for="intent">Rendering intent mix <span class="kbd" id="intentNum">perceptual-ish</span></label>
+              <input id="intent" type="range" min="0" max="100" step="1" value="60" />
+              <div class="hint">Left = preserve saturation (clip-ish). Right = preserve relationships (compress-ish).</div>
+            </div>
+
+            <div class="control">
+              <label for="printerLimit">Printer saturation limit <span class="kbd" id="limitNum">70%</span></label>
+              <input id="printerLimit" type="range" min="40" max="100" step="1" value="70" />
+              <div class="hint">Lower = smaller printer gamut.</div>
+            </div>
+          </div>
+
+          <!-- Accessibility -->
+          <div class="tabpage" id="tab-access" role="tabpanel" aria-labelledby="t-access">
+            <div class="panel">
+              <h3 style="margin:0 0 6px;">Accessibility (color vision differences)</h3>
+              <p class="muted" style="margin:0;">
+                Some people have reduced sensitivity to certain cone types (e.g., red-green confusion).
+                Good design avoids relying on color alone: add labels, shapes, and ensure contrast.
+              </p>
+              <div class="row">
+                <span class="badge">Design rule</span>
+                <strong class="muted">redundancy + contrast</strong>
+              </div>
+            </div>
+
+            <div class="control" style="margin-top:12px;">
+              <label for="cvd">Simulation strength <span class="kbd" id="cvdNum">60%</span></label>
+              <input id="cvd" type="range" min="0" max="100" step="1" value="60" />
+              <div class="hint">We apply a simple matrix-based simulation (toy, not clinical).</div>
+            </div>
+
+            <div class="control">
+              <label for="scheme">Palette scenario <span class="kbd" id="schemeNum">chart</span></label>
+              <input id="scheme" type="range" min="0" max="2" step="1" value="0" />
+              <div class="hint">Switch between a chart, a UI badge, and a map-like legend.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: demo visuals -->
+        <div>
+          <div class="panel">
+            <div class="muted" style="font-size:13px;">Demo view</div>
+
+            <!-- Constancy view -->
+            <div id="view-constancy" class="view">
+              <div class="two">
+                <div>
+                  <div class="muted" style="font-size:13px;">Scene under light</div>
+                  <div class="swatch" id="sceneSw"></div>
+                </div>
+                <div>
+                  <div class="muted" style="font-size:13px;">Perceived (with adaptation)</div>
+                  <div class="swatch" id="perceivedSw"></div>
+                </div>
+              </div>
+              <div class="row">
+                <span>Tip</span>
+                <strong class="muted">Notice how “perceived” stays steadier.</strong>
+              </div>
+            </div>
+
+            <!-- Camera WB view -->
+            <div id="view-camera" class="view" style="display:none;">
+              <canvas id="wbCanvas" width="900" height="360" aria-label="White balance demo canvas"></canvas>
+              <div class="row">
+                <span>Goal</span>
+                <strong class="muted">Make the gray card look neutral.</strong>
+              </div>
+            </div>
+
+            <!-- Print view -->
+            <div id="view-print" class="view" style="display:none;">
+              <div class="two">
+                <div>
+                  <div class="muted" style="font-size:13px;">On screen (vivid)</div>
+                  <div class="swatch" id="screenVivid"></div>
+                </div>
+                <div>
+                  <div class="muted" style="font-size:13px;">On paper (mapped)</div>
+                  <div class="swatch" id="paperMapped"></div>
+                </div>
+              </div>
+              <div class="row">
+                <span>ΔE (toy)</span>
+                <strong id="dePrint">—</strong>
+              </div>
+            </div>
+
+            <!-- Accessibility view -->
+            <div id="view-access" class="view" style="display:none;">
+              <div class="two">
+                <div>
+                  <div class="muted" style="font-size:13px;">Original</div>
+                  <canvas id="accA" width="900" height="360" aria-label="Original palette"></canvas>
+                </div>
+                <div>
+                  <div class="muted" style="font-size:13px;">Simulated</div>
+                  <canvas id="accB" width="900" height="360" aria-label="Simulated palette"></canvas>
+                </div>
+              </div>
+              <div class="row">
+                <span>Advice</span>
+                <strong class="muted">Don’t rely on color alone.</strong>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">✅</div>
+            <div>
+              <strong>Takeaway:</strong> In real systems, good results come from combining
+              <strong>models</strong> (Lab/ΔE, profiles) with <strong>human factors</strong> (adaptation, context, accessibility).
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Recap">
+      <div class="section-head">
+        <h2>What you learned</h2>
+        <p class="muted">Short recap.</p>
+      </div>
+      <ul>
+        <li>Perception adapts to lighting (constancy).</li>
+        <li>Cameras estimate white balance to keep neutrals neutral.</li>
+        <li>Printing uses profiles, mapping, and ΔE-based tolerances.</li>
+        <li>Accessible design uses contrast and redundancy, not color alone.</li>
+      </ul>
+    </section>
+
+    <nav class="pager" aria-label="Lesson navigation">
+      <a class="btn btn--ghost" href="./11-gamut.html">← Previous: Gamuts</a>
+      <a class="btn" href="../index.html">🏠 Home</a>
+      <a class="btn btn--primary" href="./13-review-quiz.html">Next: Review quiz →</a>
+    </nav>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">Up next: Review quiz</div>
+          <div class="muted">Quick challenges across the whole Foundations track.</div>
+        </div>
+        <div class="footer__right">
+          <a class="btn btn--small" href="./13-review-quiz.html">Continue</a>
+        </div>
+      </div>
+      <div class="tiny muted">Level setting is saved only in your browser (no account, no tracking).</div>
+    </footer>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    // -------- Shared helpers --------
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+    function clamp255(x){ return Math.max(0, Math.min(255, x)); }
+
+    // sRGB -> linear
+    function srgbToLinear(c){ c/=255; return (c <= 0.04045) ? (c/12.92) : Math.pow((c+0.055)/1.055, 2.4); }
+
+    // linear -> sRGB
+    function linearToSrgb(c){
+      c = clamp01(c);
+      const v = (c <= 0.0031308) ? (12.92*c) : (1.055*Math.pow(c, 1/2.4) - 0.055);
+      return clamp255(Math.round(v*255));
+    }
+
+    // simple Lab for ΔE display (same D65 as earlier lessons)
+    const D65 = { Xn: 0.95047, Yn: 1.00000, Zn: 1.08883 };
+    function rgbToXyz(rgb){
+      const r = srgbToLinear(rgb.r);
+      const g = srgbToLinear(rgb.g);
+      const b = srgbToLinear(rgb.b);
+      return {
+        X: 0.4124564*r + 0.3575761*g + 0.1804375*b,
+        Y: 0.2126729*r + 0.7151522*g + 0.0721750*b,
+        Z: 0.0193339*r + 0.1191920*g + 0.9503041*b,
+      };
+    }
+    function fLab(t){
+      const d = 6/29;
+      return (t > Math.pow(d,3)) ? Math.cbrt(t) : (t/(3*d*d) + 4/29);
+    }
+    function xyzToLab(xyz){
+      const xr = xyz.X / D65.Xn;
+      const yr = xyz.Y / D65.Yn;
+      const zr = xyz.Z / D65.Zn;
+      const fx = fLab(xr), fy = fLab(yr), fz = fLab(zr);
+      return { L: 116*fy - 16, a: 500*(fx - fy), b: 200*(fy - fz) };
+    }
+    function deltaE76(l1,l2){
+      const dL=l1.L-l2.L, da=l1.a-l2.a, db=l1.b-l2.b;
+      return Math.sqrt(dL*dL + da*da + db*db);
+    }
+
+    function rgbToCss(c){ return `rgb(${c.r},${c.g},${c.b})`; }
+
+    // -------- Tabs --------
+    const tabs = Array.from(document.querySelectorAll(".tabbtn"));
+    const pages = Array.from(document.querySelectorAll(".tabpage"));
+
+    function setTab(id){
+      tabs.forEach(t => t.setAttribute("aria-selected", String(t.id === id)));
+      pages.forEach(p => p.classList.toggle("active", p.id === document.getElementById(id).getAttribute("aria-controls")));
+
+      // swap views
+      document.getElementById("view-constancy").style.display = (id==="t-constancy") ? "" : "none";
+      document.getElementById("view-camera").style.display    = (id==="t-camera") ? "" : "none";
+      document.getElementById("view-print").style.display     = (id==="t-print") ? "" : "none";
+      document.getElementById("view-access").style.display    = (id==="t-access") ? "" : "none";
+
+      // render appropriate
+      renderAll();
+    }
+
+    tabs.forEach(t => t.addEventListener("click", () => setTab(t.id)));
+
+    // -------- Constancy demo --------
+    const ill = document.getElementById("ill");
+    const adapt = document.getElementById("adapt");
+    const illNum = document.getElementById("illNum");
+    const adaptNum = document.getElementById("adaptNum");
+    const sceneSw = document.getElementById("sceneSw");
+    const perceivedSw = document.getElementById("perceivedSw");
+
+    // We'll use a fixed "object" reflectance color
+    const obj = { r: 180, g: 180, b: 160 };
+
+    function illuminantTint(t){
+      // t in [-100..100], warm => more R/G, cool => more B
+      const s = t/100;
+      const warm = { r: 1 + 0.35*s, g: 1 + 0.18*s, b: 1 - 0.35*s };
+      return warm;
+    }
+
+    function applyIlluminant(rgb, illGain){
+      // multiply per channel (toy)
+      return {
+        r: clamp255(Math.round(rgb.r * illGain.r)),
+        g: clamp255(Math.round(rgb.g * illGain.g)),
+        b: clamp255(Math.round(rgb.b * illGain.b)),
+      };
+    }
+
+    function adaptToWhite(rgb, illGain, strength){
+      // simple Von Kries-like scaling back toward neutral
+      // estimate "white" as illGain; compute inverse gains and blend by strength
+      const s = strength;
+      const inv = { r: 1/(illGain.r||1e-6), g: 1/(illGain.g||1e-6), b: 1/(illGain.b||1e-6) };
+      const gain = {
+        r: (1-s)*1 + s*inv.r,
+        g: (1-s)*1 + s*inv.g,
+        b: (1-s)*1 + s*inv.b,
+      };
+      return {
+        r: clamp255(Math.round(rgb.r * gain.r)),
+        g: clamp255(Math.round(rgb.g * gain.g)),
+        b: clamp255(Math.round(rgb.b * gain.b)),
+      };
+    }
+
+    function renderConstancy(){
+      const t = Number(ill.value);
+      const a = Number(adapt.value)/100;
+
+      illNum.textContent = (t < -10) ? "cool" : (t > 10) ? "warm" : "neutral";
+      adaptNum.textContent = Math.round(a*100) + "%";
+
+      const g = illuminantTint(t);
+      const scene = applyIlluminant(obj, g);
+      const perceived = adaptToWhite(scene, g, a);
+
+      sceneSw.style.background = rgbToCss(scene);
+      perceivedSw.style.background = rgbToCss(perceived);
+    }
+
+    ill.addEventListener("input", renderAll);
+    adapt.addEventListener("input", renderAll);
+
+    // -------- Camera WB demo --------
+    const wbTemp = document.getElementById("wbTemp");
+    const wbTint = document.getElementById("wbTint");
+    const wbTempNum = document.getElementById("wbTempNum");
+    const wbTintNum = document.getElementById("wbTintNum");
+    const wbCanvas = document.getElementById("wbCanvas");
+    const wbCtx = wbCanvas.getContext("2d");
+
+    function drawWB(){
+      const temp = Number(wbTemp.value); // -100..100
+      const tint = Number(wbTint.value); // -100..100
+      wbTempNum.textContent = (temp===0) ? "5200K-ish" : (temp>0 ? "warmer correction" : "cooler correction");
+      wbTintNum.textContent = String(tint);
+
+      // Build a fake "photo": skin patch, gray card, sky patch
+      const patches = [
+        {name:"skin", rgb:{r:210,g:160,b:130}},
+        {name:"gray", rgb:{r:160,g:160,b:160}},
+        {name:"sky",  rgb:{r:120,g:160,b:210}},
+      ];
+
+      // Simulate a warm indoor illuminant applied before WB
+      const illGain = illuminantTint(35);
+      function applyWB(rgb){
+        // WB: gains based on temp & tint controls (toy)
+        const t = temp/100;
+        const g = tint/100;
+
+        // temp: scale R/B opposite directions; tint: scale G vs (R+B)
+        const gain = {
+          r: 1 + 0.35*t - 0.12*g,
+          g: 1 + 0.22*g,
+          b: 1 - 0.35*t - 0.12*g,
+        };
+        return {
+          r: clamp255(Math.round(rgb.r * gain.r)),
+          g: clamp255(Math.round(rgb.g * gain.g)),
+          b: clamp255(Math.round(rgb.b * gain.b)),
+        };
+      }
+
+      wbCtx.clearRect(0,0,wbCanvas.width, wbCanvas.height);
+
+      // background
+      wbCtx.fillStyle = "rgba(0,0,0,0.22)";
+      wbCtx.fillRect(0,0,wbCanvas.width, wbCanvas.height);
+
+      const pad = 26;
+      const W = wbCanvas.width;
+      const H = wbCanvas.height;
+
+      wbCtx.fillStyle = "rgba(255,255,255,0.85)";
+      wbCtx.font = "18px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      wbCtx.fillText("WB demo: fix the gray card", pad, pad+10);
+
+      const boxW = (W - 4*pad)/3;
+      const boxH = H - 2*pad - 20;
+
+      patches.forEach((p, i) => {
+        const x = pad + i*(boxW + pad);
+        const y = pad + 20;
+
+        const lit = applyIlluminant(p.rgb, illGain);
+        const out = applyWB(lit);
+
+        wbCtx.fillStyle = `rgb(${out.r},${out.g},${out.b})`;
+        wbCtx.fillRect(x, y, boxW, boxH);
+
+        wbCtx.strokeStyle = "rgba(255,255,255,0.22)";
+        wbCtx.lineWidth = 2;
+        wbCtx.strokeRect(x, y, boxW, boxH);
+
+        wbCtx.fillStyle = "rgba(255,255,255,0.80)";
+        wbCtx.font = "14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        wbCtx.fillText(p.name, x, y + boxH + 18);
+      });
+    }
+
+    wbTemp.addEventListener("input", renderAll);
+    wbTint.addEventListener("input", renderAll);
+
+    // -------- Print proofing demo (toy mapping) --------
+    const intent = document.getElementById("intent");
+    const printerLimit = document.getElementById("printerLimit");
+    const intentNum = document.getElementById("intentNum");
+    const limitNum = document.getElementById("limitNum");
+
+    const screenVivid = document.getElementById("screenVivid");
+    const paperMapped = document.getElementById("paperMapped");
+    const dePrint = document.getElementById("dePrint");
+
+    // vivid screen color to start (can be out-of-gamut for printer)
+    const vivid = { r: 40, g: 220, b: 255 };
+
+    function compressSaturation(rgb, limit, mix){
+      // Convert to "HSV-ish" saturation in a toy way: pull channels toward mean.
+      // mix=0 => clip to limit, mix=1 => compress smoothly
+      const R = rgb.r/255, G = rgb.g/255, B = rgb.b/255;
+      const mean = (R+G+B)/3;
+      const sat = Math.max(Math.abs(R-mean), Math.abs(G-mean), Math.abs(B-mean)) * 3; // toy [0..~1.5]
+      const sat01 = clamp01(sat);
+
+      const lim = limit; // 0..1
+      let factor;
+      if (sat01 <= lim) factor = 1;
+      else {
+        const clipFactor = lim / (sat01 || 1e-6);
+        const smooth = 1 - (sat01 - lim) * 0.75; // compress
+        factor = (1-mix)*clipFactor + mix*clamp01(smooth);
+      }
+
+      const out = {
+        r: linearToSrgb(clamp01(mean + (R-mean)*factor)),
+        g: linearToSrgb(clamp01(mean + (G-mean)*factor)),
+        b: linearToSrgb(clamp01(mean + (B-mean)*factor)),
+      };
+      return out;
+    }
+
+    function renderPrint(){
+      const mix = Number(intent.value)/100;
+      const lim = Number(printerLimit.value)/100;
+
+      intentNum.textContent = (mix < 0.35) ? "clip-ish" : (mix > 0.65) ? "perceptual-ish" : "mixed";
+      limitNum.textContent = Math.round(lim*100) + "%";
+
+      const mapped = compressSaturation(vivid, lim, mix);
+
+      screenVivid.style.background = rgbToCss(vivid);
+      paperMapped.style.background = rgbToCss(mapped);
+
+      const dE = deltaE76(xyzToLab(rgbToXyz(vivid)), xyzToLab(rgbToXyz(mapped)));
+      dePrint.textContent = dE.toFixed(2) + " (ΔE76)";
+    }
+
+    intent.addEventListener("input", renderAll);
+    printerLimit.addEventListener("input", renderAll);
+
+    // -------- Accessibility demo (toy CVD simulation) --------
+    const cvd = document.getElementById("cvd");
+    const scheme = document.getElementById("scheme");
+    const cvdNum = document.getElementById("cvdNum");
+    const schemeNum = document.getElementById("schemeNum");
+
+    const accA = document.getElementById("accA");
+    const accB = document.getElementById("accB");
+    const accCtxA = accA.getContext("2d");
+    const accCtxB = accB.getContext("2d");
+
+    function mixRgb(a,b,t){
+      return {
+        r: Math.round(a.r + (b.r-a.r)*t),
+        g: Math.round(a.g + (b.g-a.g)*t),
+        b: Math.round(a.b + (b.b-a.b)*t),
+      };
+    }
+
+    // Toy "deuteranopia-ish" matrix (not clinical; used only for intuition)
+    function simulateCvd(rgb, strength){
+      const t = strength;
+      const R = rgb.r/255, G = rgb.g/255, B = rgb.b/255;
+
+      // A simple confusion-style mix that reduces red/green separability
+      const sim = {
+        r: clamp01(0.62*R + 0.38*G),
+        g: clamp01(0.30*R + 0.70*G),
+        b: clamp01(0.05*R + 0.05*G + 0.90*B),
+      };
+
+      const outLin = {
+        r: (1-t)*R + t*sim.r,
+        g: (1-t)*G + t*sim.g,
+        b: (1-t)*B + t*sim.b,
+      };
+
+      return {
+        r: Math.round(outLin.r*255),
+        g: Math.round(outLin.g*255),
+        b: Math.round(outLin.b*255),
+      };
+    }
+
+    function drawPalette(ctx, colors, labels){
+      ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+      ctx.fillStyle = "rgba(0,0,0,0.22)";
+      ctx.fillRect(0,0,ctx.canvas.width, ctx.canvas.height);
+
+      const pad = 22;
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      ctx.font = "16px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.fillText(labels.title, pad, pad+4);
+
+      const W = ctx.canvas.width;
+      const H = ctx.canvas.height;
+
+      const y0 = pad+18;
+      const boxH = H - y0 - pad;
+      const boxW = (W - pad*(colors.length+1)) / colors.length;
+
+      for (let i=0; i<colors.length; i++){
+        const x = pad + i*(boxW + pad);
+        const c = colors[i];
+        ctx.fillStyle = `rgb(${c.r},${c.g},${c.b})`;
+        ctx.fillRect(x, y0, boxW, boxH);
+
+        ctx.strokeStyle = "rgba(255,255,255,0.20)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y0, boxW, boxH);
+
+        ctx.fillStyle = "rgba(255,255,255,0.80)";
+        ctx.font = "13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        ctx.fillText(labels.items[i], x, y0 + boxH + 16);
+      }
+    }
+
+    function getScheme(idx){
+      if (idx === 0){
+        return {
+          title: "Chart series (4 lines)",
+          items: ["A","B","C","D"],
+          colors: [
+            {r: 255,g: 99,b: 92},
+            {r:  65,g:180,b:255},
+            {r:  90,g:240,b:155},
+            {r: 255,g:210,b: 85},
+          ]
+        };
+      }
+      if (idx === 1){
+        return {
+          title: "UI badges (status)",
+          items: ["OK","WARN","FAIL","INFO"],
+          colors: [
+            {r:  70,g:220,b:140},
+            {r: 255,g:200,b: 70},
+            {r: 255,g: 90,b: 90},
+            {r:  90,g:170,b:255},
+          ]
+        };
+      }
+      return {
+        title: "Map legend (categories)",
+        items: ["Park","Water","Road","Housing"],
+        colors: [
+          {r: 120,g:220,b: 95},
+          {r:  70,g:165,b:255},
+          {r: 230,g:230,b:230},
+          {r: 255,g:140,b: 85},
+        ]
+      };
+    }
+
+    function renderAccess(){
+      const s = Number(cvd.value)/100;
+      const idx = Number(scheme.value);
+      cvdNum.textContent = Math.round(s*100) + "%";
+      schemeNum.textContent = (idx===0) ? "chart" : (idx===1) ? "UI" : "map";
+
+      const sch = getScheme(idx);
+      const simColors = sch.colors.map(c => simulateCvd(c, s));
+      drawPalette(accCtxA, sch.colors, {title: sch.title + " (original)", items: sch.items});
+      drawPalette(accCtxB, simColors,  {title: sch.title + " (simulated)", items: sch.items});
+    }
+
+    cvd.addEventListener("input", renderAll);
+    scheme.addEventListener("input", renderAll);
+
+    // -------- master render --------
+    function renderAll(){
+      renderConstancy();
+      drawWB();
+      renderPrint();
+      renderAccess();
+    }
+
+    // init
+    renderAll();
+  </script>
+</body>
+</html>
