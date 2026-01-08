@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>04 — RGB & Displays • Color Lab</title>
+  <meta name="description" content="How screens use RGB primaries to create colors (additive mixing). Interactive mixing playground and matching challenge." />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+
+  <style>
+    .crumbs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; color: var(--muted); font-size: 13px; }
+    .crumbs a{ color: var(--text); text-decoration:none; }
+    .crumbs a:hover{ text-decoration: underline; }
+
+    .lesson-head{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
+    .lesson-head .seg{ max-width: 520px; width: 100%; }
+
+    .level-block{ display:none; }
+    html[data-level="kids"] .level-kids{ display:block; }
+    html[data-level="mid"]  .level-mid{ display:block; }
+    html[data-level="uni"]  .level-uni{ display:block; }
+
+    .callout{
+      border-left: 4px solid rgba(255,211,107,0.70);
+      padding: 12px 14px;
+      background: rgba(255,211,107,0.10);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .tryit-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .tryit-grid{ grid-template-columns: 1fr; }
+    }
+
+    .control{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      margin-bottom: 10px;
+    }
+    .control label{ font-weight: 850; display:flex; justify-content:space-between; gap:10px; }
+    .control input[type="range"]{ width:100%; }
+    .control .hint{ font-size: 12.5px; color: var(--muted); }
+
+    .panel{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+
+    .swatch{
+      height: 140px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #222;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
+    }
+    .swatch--small{ height: 90px; }
+
+    .row{
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .two{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 560px){
+      .two{ grid-template-columns: 1fr; }
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .note{ display:flex; gap:12px; align-items:flex-start; }
+    .note__icon{ font-size: 20px; }
+
+    .challenge{
+      margin-top: 12px;
+      display:grid;
+      gap: 10px;
+    }
+
+    .meterline{
+      height: 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      overflow:hidden;
+      position:relative;
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      background: rgba(255,255,255,0.80);
+    }
+
+    .pager{
+      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .pager .btn{ min-width: 160px; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Interactive color science</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="../index.html">Home</a>
+        <a class="nav__link" href="./glossary.html">Glossary</a>
+        <a class="nav__link" href="./about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span aria-hidden="true">›</span>
+      <span>Module B — Digital color</span>
+      <span aria-hidden="true">›</span>
+      <strong>04 — RGB & displays</strong>
+    </div>
+
+    <section class="card">
+      <div class="lesson-head">
+        <div>
+          <h1>04 — RGB & displays</h1>
+          <p class="lead">
+            Screens create color by <strong>adding light</strong> from three primaries: <strong>Red, Green, Blue</strong>.
+            This is called <strong>additive mixing</strong>.
+          </p>
+        </div>
+
+        <div aria-label="Difficulty level">
+          <div class="seg" role="group" aria-label="Difficulty toggle">
+            <button class="seg__btn" type="button" data-level="kids" aria-pressed="true">Kids / Beginner</button>
+            <button class="seg__btn" type="button" data-level="mid" aria-pressed="false">Intermediate</button>
+            <button class="seg__btn" type="button" data-level="uni" aria-pressed="false">University</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" role="note">
+        <strong>Big idea:</strong> RGB works because matching the <em>cone responses</em> in your eyes is enough to match
+        perceived color for most people.
+      </div>
+
+      <div class="level-block level-kids">
+        <h2>Adding light = brighter</h2>
+        <ul>
+          <li>Red light + Green light → looks <strong>yellow</strong></li>
+          <li>Green + Blue → looks <strong>cyan</strong></li>
+          <li>Red + Blue → looks <strong>magenta</strong></li>
+          <li>All three high → <strong>white</strong></li>
+        </ul>
+        <p class="muted">This is different from mixing paints (we’ll do printing later!).</p>
+      </div>
+
+      <div class="level-block level-mid">
+        <h2>Why three primaries?</h2>
+        <p>
+          Your eye has three cone types (S/M/L). A display can adjust its three primaries so the
+          resulting light triggers similar cone responses to the real thing.
+        </p>
+        <ul>
+          <li><strong>Not</strong> because “there are only three colors in the world.”</li>
+          <li>Because three controls can match three cone signals (approximately).</li>
+        </ul>
+      </div>
+
+      <div class="level-block level-uni">
+        <h2>Tristimulus matching</h2>
+        <p>
+          For a given observer and viewing conditions, many spectra reduce to a 3D response space (e.g., LMS or CIE XYZ).
+          Displays exploit this by emitting three fixed spectra and varying their intensities.
+        </p>
+        <p class="muted">
+          Caveat: metameric matches can break under different observers or lighting; gamut limits also matter.
+        </p>
+      </div>
+    </section>
+
+    <!-- Try it -->
+    <section class="card" aria-label="Try it">
+      <div class="section-head">
+        <h2>Try it: RGB mixing playground</h2>
+        <p class="muted">Drag sliders. Watch the mixed color and its hex code.</p>
+      </div>
+
+      <div class="tryit-grid">
+        <div>
+          <div class="control">
+            <label for="r">Red <span class="kbd" id="rNum">128</span></label>
+            <input id="r" type="range" min="0" max="255" step="1" value="128" />
+            <div class="hint">Tip: Red + Green makes yellow-ish.</div>
+          </div>
+          <div class="control">
+            <label for="g">Green <span class="kbd" id="gNum">128</span></label>
+            <input id="g" type="range" min="0" max="255" step="1" value="128" />
+          </div>
+          <div class="control">
+            <label for="b">Blue <span class="kbd" id="bNum">128</span></label>
+            <input id="b" type="range" min="0" max="255" step="1" value="128" />
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn--ghost" type="button" id="presetBlack">⬛ Black</button>
+            <button class="btn btn--ghost" type="button" id="presetWhite">⬜ White</button>
+            <button class="btn btn--ghost" type="button" id="presetSun">☀️ Warm</button>
+            <button class="btn btn--ghost" type="button" id="randomBtn">🎲 Random</button>
+          </div>
+
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">👁️</div>
+            <div>
+              <strong>Vision link:</strong> RGB is a control system for your cones.
+              It doesn’t reproduce the full spectrum — it reproduces a match (metamer).
+            </div>
+          </div>
+
+          <div class="note card card--inset" role="note">
+            <div class="note__icon" aria-hidden="true">🖨️</div>
+            <div>
+              <strong>Printing preview:</strong> inks don’t add light; they remove parts of the spectrum.
+              That’s why RGB on screen doesn’t directly “mix” like paint or CMYK.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="two">
+              <div>
+                <div class="muted" style="font-size:13px;">Mixed color</div>
+                <div class="swatch" id="mixSwatch" aria-label="Mixed color swatch"></div>
+                <div class="row">
+                  <span>Hex</span>
+                  <strong id="hexText">#808080</strong>
+                </div>
+                <div class="row">
+                  <span>RGB</span>
+                  <strong id="rgbText">rgb(128, 128, 128)</strong>
+                </div>
+              </div>
+              <div>
+                <div class="muted" style="font-size:13px;">Channels</div>
+                <div class="swatch swatch--small" id="rSwatch" aria-label="Red channel swatch"></div>
+                <div class="swatch swatch--small" id="gSwatch" aria-label="Green channel swatch" style="margin-top:10px;"></div>
+                <div class="swatch swatch--small" id="bSwatch" aria-label="Blue channel swatch" style="margin-top:10px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <section class="panel challenge" aria-label="Color matching challenge" style="margin-top:12px;">
+            <h3 class="h4" style="margin:0;">Mini challenge: Match the target 🎯</h3>
+            <p class="muted" style="margin:6px 0 0;">
+              Adjust RGB until the mixed color matches the target as closely as you can.
+            </p>
+
+            <div class="two">
+              <div>
+                <div class="muted" style="font-size:13px;">Target</div>
+                <div class="swatch" id="targetSwatch" aria-label="Target color swatch"></div>
+                <div class="row">
+                  <span>Target hex</span>
+                  <strong id="targetHex">—</strong>
+                </div>
+              </div>
+              <div>
+                <div class="muted" style="font-size:13px;">How close?</div>
+                <div class="meterline" aria-label="Closeness meter">
+                  <div class="fill" id="closeFill"></div>
+                </div>
+                <div class="row">
+                  <span>Distance (RGB)</span>
+                  <strong id="distText">—</strong>
+                </div>
+                <div class="row">
+                  <span>Rating</span>
+                  <strong id="ratingText">—</strong>
+                </div>
+                <button class="btn btn--primary" type="button" id="newTargetBtn">New target</button>
+              </div>
+            </div>
+
+            <p class="tiny muted">
+              This uses simple RGB distance (not perceptual ΔE). We’ll do better color difference later.
+            </p>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Recap">
+      <div class="section-head">
+        <h2>What you learned</h2>
+        <p class="muted">Short recap.</p>
+      </div>
+      <ul>
+        <li>Screens mix color by <strong>adding light</strong> from R, G, and B.</li>
+        <li>RGB works because it can match <strong>cone responses</strong> (tristimulus matching).</li>
+        <li>RGB “distance” is not the same as perceived difference — we’ll improve that later.</li>
+      </ul>
+    </section>
+
+    <nav class="pager" aria-label="Lesson navigation">
+      <a class="btn btn--ghost" href="./03-human-vision.html">← Previous: Human vision</a>
+      <a class="btn" href="../index.html">🏠 Home</a>
+      <a class="btn btn--primary" href="./05-gamma-and-linear.html">Next: Gamma & linear light →</a>
+    </nav>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">Up next: Gamma & linear light</div>
+          <div class="muted">Why “half of 255” isn’t half the light — and why mixing can look wrong.</div>
+        </div>
+        <div class="footer__right">
+          <a class="btn btn--small" href="./05-gamma-and-linear.html">Continue</a>
+        </div>
+      </div>
+      <div class="tiny muted">Level setting is saved only in your browser (no account, no tracking).</div>
+    </footer>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+    function hex2(n){ return n.toString(16).padStart(2,"0"); }
+    function rgbToHex(r,g,b){ return ("#" + hex2(r) + hex2(g) + hex2(b)).toUpperCase(); }
+
+    function setRgb(r,g,b){
+      R.value = r; G.value = g; B.value = b;
+      render();
+    }
+
+    const R = document.getElementById("r");
+    const G = document.getElementById("g");
+    const B = document.getElementById("b");
+    const rNum = document.getElementById("rNum");
+    const gNum = document.getElementById("gNum");
+    const bNum = document.getElementById("bNum");
+
+    const mixSwatch = document.getElementById("mixSwatch");
+    const rSwatch = document.getElementById("rSwatch");
+    const gSwatch = document.getElementById("gSwatch");
+    const bSwatch = document.getElementById("bSwatch");
+    const hexText = document.getElementById("hexText");
+    const rgbText = document.getElementById("rgbText");
+
+    // Challenge
+    const targetSwatch = document.getElementById("targetSwatch");
+    const targetHex = document.getElementById("targetHex");
+    const closeFill = document.getElementById("closeFill");
+    const distText = document.getElementById("distText");
+    const ratingText = document.getElementById("ratingText");
+    const newTargetBtn = document.getElementById("newTargetBtn");
+
+    let target = {r: 80, g: 170, b: 220};
+
+    function randomTarget(){
+      // Keep targets not too dark, not too bright (more fun to match)
+      const r = 30 + Math.floor(Math.random()*196);
+      const g = 30 + Math.floor(Math.random()*196);
+      const b = 30 + Math.floor(Math.random()*196);
+      target = {r,g,b};
+      targetSwatch.style.background = `rgb(${r},${g},${b})`;
+      targetHex.textContent = rgbToHex(r,g,b);
+      render();
+    }
+
+    function rgbDistance(a,b){
+      const dr = a.r - b.r, dg = a.g - b.g, db = a.b - b.b;
+      return Math.sqrt(dr*dr + dg*dg + db*db);
+    }
+
+    function render(){
+      const r = Number(R.value), g = Number(G.value), b = Number(B.value);
+      rNum.textContent = r;
+      gNum.textContent = g;
+      bNum.textContent = b;
+
+      mixSwatch.style.background = `rgb(${r},${g},${b})`;
+      hexText.textContent = rgbToHex(r,g,b);
+      rgbText.textContent = `rgb(${r}, ${g}, ${b})`;
+
+      rSwatch.style.background = `rgb(${r},0,0)`;
+      gSwatch.style.background = `rgb(0,${g},0)`;
+      bSwatch.style.background = `rgb(0,0,${b})`;
+
+      // Challenge scoring
+      const d = rgbDistance({r,g,b}, target);
+      // Max possible distance in RGB cube is sqrt(3*255^2) ≈ 441.67
+      const maxD = Math.sqrt(3*255*255);
+      const closeness = 1 - (d / maxD); // 0..1
+      closeFill.style.width = (clamp01(closeness) * 100).toFixed(1) + "%";
+      distText.textContent = d.toFixed(1);
+
+      let rating = "Keep going 🙂";
+      if (closeness > 0.92) rating = "Nailed it! ⭐";
+      else if (closeness > 0.85) rating = "Really close! 🔥";
+      else if (closeness > 0.75) rating = "Getting there ✅";
+      ratingText.textContent = rating;
+    }
+
+    [R,G,B].forEach(el => el.addEventListener("input", render));
+
+    document.getElementById("presetBlack").addEventListener("click", () => setRgb(0,0,0));
+    document.getElementById("presetWhite").addEventListener("click", () => setRgb(255,255,255));
+    document.getElementById("presetSun").addEventListener("click", () => setRgb(255, 224, 170));
+    document.getElementById("randomBtn").addEventListener("click", () => {
+      setRgb(Math.floor(Math.random()*256), Math.floor(Math.random()*256), Math.floor(Math.random()*256));
+    });
+
+    newTargetBtn.addEventListener("click", randomTarget);
+
+    // init
+    randomTarget();
+    render();
+  </script>
+</body>
+</html>
