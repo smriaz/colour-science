@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>02 — Light & Spectra • Color Lab</title>
+  <meta name="description" content="Learn what spectra are, why light sources differ, and how spectra affect perceived color and printing." />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+
+  <style>
+    .crumbs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; color: var(--muted); font-size: 13px; }
+    .crumbs a{ color: var(--text); text-decoration:none; }
+    .crumbs a:hover{ text-decoration: underline; }
+
+    .lesson-head{
+      display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;
+    }
+    .lesson-head .seg{ max-width: 520px; width: 100%; }
+
+    .level-block{ display:none; }
+    html[data-level="kids"] .level-kids{ display:block; }
+    html[data-level="mid"]  .level-mid{ display:block; }
+    html[data-level="uni"]  .level-uni{ display:block; }
+
+    .callout{
+      border-left: 4px solid rgba(167,139,250,0.55);
+      padding: 12px 14px;
+      background: rgba(167,139,250,0.10);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .tryit-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .tryit-grid{ grid-template-columns: 1fr; }
+    }
+
+    .control{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      margin-bottom: 10px;
+    }
+    .control label{ font-weight: 800; }
+    .control input[type="range"]{ width:100%; }
+    .control .hint{ font-size: 12.5px; color: var(--muted); }
+
+    .panel{
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+
+    .swatch{
+      height: 84px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #222;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.18);
+    }
+    .row{
+      display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .spectrumBar{
+      margin-top: 12px;
+      height: 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: linear-gradient(90deg,
+        rgb(70,0,110),
+        rgb(0,0,255),
+        rgb(0,170,255),
+        rgb(0,255,140),
+        rgb(170,255,0),
+        rgb(255,200,0),
+        rgb(255,90,0),
+        rgb(255,0,0)
+      );
+      position: relative;
+      overflow: hidden;
+    }
+    .marker{
+      position:absolute; top:-6px;
+      width: 0; height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 10px solid rgba(255,255,255,0.90);
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+      transform: translateX(-8px);
+    }
+
+    canvas{
+      width: 100%;
+      height: 220px;
+      display:block;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.14);
+    }
+
+    .note{
+      display:flex; gap:12px; align-items:flex-start;
+    }
+    .note__icon{ font-size: 20px; }
+
+    .pager{
+      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .pager .btn{ min-width: 160px; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">🎨</span>
+        <div>
+          <div class="brand__title">Color Lab</div>
+          <div class="brand__tag">Interactive color science</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="../index.html">Home</a>
+        <a class="nav__link" href="./glossary.html">Glossary</a>
+        <a class="nav__link" href="./about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <div class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a>
+      <span aria-hidden="true">›</span>
+      <span>Module A — Basics</span>
+      <span aria-hidden="true">›</span>
+      <strong>02 — Light & spectra</strong>
+    </div>
+
+    <section class="card">
+      <div class="lesson-head">
+        <div>
+          <h1>02 — Light & spectra</h1>
+          <p class="lead">
+            Light isn’t just “bright” or “dim.” It has a <strong>recipe</strong>—how much energy it has at each wavelength.
+            That recipe is called a <strong>spectrum</strong>.
+          </p>
+        </div>
+
+        <div aria-label="Difficulty level">
+          <div class="seg" role="group" aria-label="Difficulty toggle">
+            <button class="seg__btn" type="button" data-level="kids" aria-pressed="true">Kids / Beginner</button>
+            <button class="seg__btn" type="button" data-level="mid" aria-pressed="false">Intermediate</button>
+            <button class="seg__btn" type="button" data-level="uni" aria-pressed="false">University</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" role="note">
+        <strong>Big idea:</strong> Two lights can look “white” but have very different spectra — and that can change how objects
+        and prints look under them.
+      </div>
+
+      <!-- Kids -->
+      <div class="level-block level-kids">
+        <h2>Think of light like a smoothie</h2>
+        <ul>
+          <li>A rainbow has many “flavors” of light.</li>
+          <li>Some lamps have lots of one flavor, not much of others.</li>
+          <li>Objects can only reflect what’s actually in the light!</li>
+        </ul>
+      </div>
+
+      <!-- Intermediate -->
+      <div class="level-block level-mid">
+        <h2>Wavelength and “how much of each”</h2>
+        <p>
+          Visible light ranges roughly from <strong>~380 nm (violet)</strong> to <strong>~700 nm (red)</strong>.
+          A spectrum tells you the intensity across that range.
+        </p>
+        <ul>
+          <li><strong>Sunlight</strong> is broad (lots of wavelengths).</li>
+          <li><strong>Some LEDs</strong> can be spiky (strong peaks).</li>
+          <li>This affects <strong>color rendering</strong> (how “natural” colors look).</li>
+        </ul>
+      </div>
+
+      <!-- University -->
+      <div class="level-block level-uni">
+        <h2>SPD: spectral power distribution</h2>
+        <p>
+          A light source is described by an SPD: power vs wavelength. Perceived color depends on how that SPD interacts with
+          object reflectance and then projects onto cone sensitivities.
+        </p>
+        <p class="muted">
+          This sets up metamerism and printing issues: ink reflectances are spectral, so “same RGB under one lamp” may differ under another.
+        </p>
+      </div>
+    </section>
+
+    <!-- Try it (after explanation) -->
+    <section class="card" aria-label="Try it">
+      <div class="section-head">
+        <h2>Try it: From wavelength to color (and spectra shapes)</h2>
+        <p class="muted">We’ll use simplified models so you can build intuition fast.</p>
+      </div>
+
+      <div class="tryit-grid">
+        <div>
+          <div class="control">
+            <label for="wl">Wavelength (nm)</label>
+            <input id="wl" type="range" min="380" max="700" step="1" value="545" />
+            <div class="hint">Drag to explore the rainbow. (Real perception is more complex than this demo.)</div>
+          </div>
+
+          <div class="panel" aria-label="Wavelength color result">
+            <div class="swatch" id="wlSwatch" aria-label="Wavelength swatch"></div>
+
+            <div class="spectrumBar" aria-hidden="true">
+              <div class="marker" id="wlMarker"></div>
+            </div>
+
+            <div class="row">
+              <span>Wavelength</span>
+              <strong id="wlText">545 nm</strong>
+            </div>
+            <div class="row">
+              <span>Approx. color</span>
+              <strong id="wlHex">—</strong>
+            </div>
+          </div>
+
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">👁️</div>
+            <div>
+              <strong>Vision note:</strong> wavelength is a physical thing, but “color” is perception.
+              Your cones don’t measure wavelength directly — they respond in broad overlapping bands.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="control">
+            <label for="source">Choose a light source (toy SPD)</label>
+            <select id="source" class="btn" style="justify-content:flex-start;">
+              <option value="sun">Sunlight-ish (broad)</option>
+              <option value="warm">Warm LED-ish (blue + yellow bump)</option>
+              <option value="cool">Cool LED-ish (strong blue + phosphor)</option>
+              <option value="mono">Monochromatic-ish (narrow)</option>
+            </select>
+            <div class="hint">This plot shows a pretend spectrum shape. Real SPDs can be more detailed and spiky.</div>
+          </div>
+
+          <canvas id="spd" width="900" height="320" aria-label="Spectrum plot"></canvas>
+
+          <div class="note card card--inset" role="note" style="margin-top:12px;">
+            <div class="note__icon" aria-hidden="true">🖨️</div>
+            <div>
+              <strong>Printing hint:</strong> prints can look different under different lamps because inks reflect some wavelengths
+              more than others. Change the lamp’s “recipe,” and the reflected recipe changes too.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mini recap -->
+    <section class="card" aria-label="Recap">
+      <div class="section-head">
+        <h2>What you learned</h2>
+        <p class="muted">Takeaways you’ll use again and again.</p>
+      </div>
+      <ul>
+        <li>A <strong>spectrum</strong> is “how much light” at each wavelength.</li>
+        <li>Different light sources can look similar but have different spectra.</li>
+        <li>Spectra matter a lot for <strong>vision science</strong> (cones) and <strong>printing</strong> (ink reflectance).</li>
+      </ul>
+    </section>
+
+    <nav class="pager" aria-label="Lesson navigation">
+      <a class="btn btn--ghost" href="./01-foundations.html">← Previous: Foundations</a>
+      <a class="btn" href="../index.html">🏠 Home</a>
+      <a class="btn btn--primary" href="./03-human-vision.html">Next: Human vision →</a>
+    </nav>
+
+    <footer class="footer card">
+      <div class="footer__row">
+        <div class="footer__left">
+          <div class="footer__title">Up next: Human vision</div>
+          <div class="muted">Cones, opponent channels, and why matching colors is possible.</div>
+        </div>
+        <div class="footer__right">
+          <a class="btn btn--small" href="./03-human-vision.html">Continue</a>
+        </div>
+      </div>
+      <div class="tiny muted">Level setting is saved only in your browser (no account, no tracking).</div>
+    </footer>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    // --- Color helpers ---
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+    function hex2(n){ return n.toString(16).padStart(2,"0"); }
+    function rgbToHex(r,g,b){ return ("#" + hex2(r) + hex2(g) + hex2(b)).toUpperCase(); }
+
+    // Approximate wavelength-to-RGB (toy model, good for intuition)
+    // Inspired by common approximations; not colorimetrically accurate.
+    function wavelengthToRgb(wl){
+      let r=0, g=0, b=0;
+
+      if (wl >= 380 && wl < 440) { r = -(wl-440)/(440-380); g = 0; b = 1; }
+      else if (wl >= 440 && wl < 490) { r = 0; g = (wl-440)/(490-440); b = 1; }
+      else if (wl >= 490 && wl < 510) { r = 0; g = 1; b = -(wl-510)/(510-490); }
+      else if (wl >= 510 && wl < 580) { r = (wl-510)/(580-510); g = 1; b = 0; }
+      else if (wl >= 580 && wl < 645) { r = 1; g = -(wl-645)/(645-580); b = 0; }
+      else if (wl >= 645 && wl <= 700) { r = 1; g = 0; b = 0; }
+
+      // Intensity falloff near ends of visible range
+      let f = 1;
+      if (wl >= 380 && wl < 420) f = 0.3 + 0.7*(wl-380)/(420-380);
+      else if (wl >= 420 && wl <= 645) f = 1;
+      else if (wl > 645 && wl <= 700) f = 0.3 + 0.7*(700-wl)/(700-645);
+
+      // Gamma-ish correction for pleasing display
+      const gamma = 0.8;
+      r = Math.round(255 * Math.pow(clamp01(r*f), gamma));
+      g = Math.round(255 * Math.pow(clamp01(g*f), gamma));
+      b = Math.round(255 * Math.pow(clamp01(b*f), gamma));
+
+      return {r,g,b};
+    }
+
+    // --- UI: wavelength slider ---
+    const wl = document.getElementById("wl");
+    const wlText = document.getElementById("wlText");
+    const wlSwatch = document.getElementById("wlSwatch");
+    const wlHex = document.getElementById("wlHex");
+    const wlMarker = document.getElementById("wlMarker");
+
+    function renderWavelength(){
+      const v = Number(wl.value);
+      const c = wavelengthToRgb(v);
+      wlText.textContent = v + " nm";
+      const hex = rgbToHex(c.r,c.g,c.b);
+      wlHex.textContent = hex;
+      wlSwatch.style.background = `rgb(${c.r},${c.g},${c.b})`;
+
+      // marker along bar (380..700)
+      const t = (v - 380) / (700 - 380);
+      wlMarker.style.left = (t * 100) + "%";
+    }
+    wl.addEventListener("input", renderWavelength);
+
+    // --- Toy SPD plots ---
+    const source = document.getElementById("source");
+    const canvas = document.getElementById("spd");
+    const ctx = canvas.getContext("2d");
+
+    function gaussian(x, mu, sigma){
+      const z = (x - mu) / sigma;
+      return Math.exp(-0.5 * z * z);
+    }
+
+    function spdValue(type, nm){
+      // Values in 0..1 (toy shapes)
+      if (type === "sun"){
+        // broad, slightly more power in longer wavelengths (warm-ish)
+        const base = 0.55 + 0.25*(nm-380)/(700-380);
+        const dip = 0.10 * gaussian(nm, 430, 20); // tiny dip just to make it not perfectly flat
+        return clamp01(base - dip);
+      }
+      if (type === "warm"){
+        // strong blue pump + broad yellow/orange phosphor
+        const blue = 0.95 * gaussian(nm, 455, 12);
+        const phosphor = 0.70 * gaussian(nm, 585, 70);
+        return clamp01(blue + phosphor);
+      }
+      if (type === "cool"){
+        // even stronger blue + slightly greener phosphor
+        const blue = 1.00 * gaussian(nm, 450, 11);
+        const phosphor = 0.55 * gaussian(nm, 540, 65);
+        return clamp01(blue + phosphor);
+      }
+      if (type === "mono"){
+        // narrow peak centered on chosen wavelength slider
+        const center = Number(wl.value);
+        return clamp01(1.0 * gaussian(nm, center, 10));
+      }
+      return 0;
+    }
+
+    function drawAxes(){
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0,0,w,h);
+
+      // frame
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(255,255,255,0.18)";
+      ctx.strokeRect(18, 18, w-36, h-52);
+
+      // labels (simple)
+      ctx.fillStyle = "rgba(255,255,255,0.75)";
+      ctx.font = "16px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.fillText("Intensity", 26, 42);
+
+      ctx.fillStyle = "rgba(255,255,255,0.65)";
+      ctx.font = "14px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.fillText("Wavelength (nm)", w/2 - 62, h - 16);
+
+      // ticks (nm)
+      const left = 18, top = 18, plotW = w-36, plotH = h-52-18;
+      const y0 = top + plotH;
+      const ticks = [400, 450, 500, 550, 600, 650, 700];
+      ticks.forEach(nm => {
+        const t = (nm - 380) / (700 - 380);
+        const x = left + t * plotW;
+        ctx.strokeStyle = "rgba(255,255,255,0.12)";
+        ctx.beginPath();
+        ctx.moveTo(x, top);
+        ctx.lineTo(x, y0);
+        ctx.stroke();
+
+        ctx.fillStyle = "rgba(255,255,255,0.55)";
+        ctx.fillText(String(nm), x-12, y0 + 18);
+      });
+    }
+
+    function drawSpd(){
+      drawAxes();
+      const type = source.value;
+      const w = canvas.width, h = canvas.height;
+      const left = 18, top = 18, plotW = w-36, plotH = h-52-18;
+      const y0 = top + plotH;
+
+      // Spectrum gradient underlay (helps intuition)
+      const grad = ctx.createLinearGradient(left, 0, left+plotW, 0);
+      // Keep it simple: few stops
+      grad.addColorStop(0.00, "rgba(120, 60, 200, 0.18)");
+      grad.addColorStop(0.20, "rgba(70, 120, 255, 0.18)");
+      grad.addColorStop(0.40, "rgba(0, 220, 255, 0.14)");
+      grad.addColorStop(0.55, "rgba(0, 255, 140, 0.12)");
+      grad.addColorStop(0.70, "rgba(210, 255, 0, 0.12)");
+      grad.addColorStop(0.85, "rgba(255, 170, 0, 0.12)");
+      grad.addColorStop(1.00, "rgba(255, 60, 60, 0.12)");
+
+      ctx.fillStyle = grad;
+      ctx.fillRect(left, top, plotW, plotH);
+
+      // Curve
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "rgba(255,255,255,0.88)";
+      ctx.beginPath();
+
+      const N = 320;
+      for (let i=0; i<=N; i++){
+        const t = i / N;
+        const nm = 380 + t*(700-380);
+        const v = spdValue(type, nm); // 0..1
+        const x = left + t*plotW;
+        const y = y0 - v*plotH;
+        if (i===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+
+      // Fill under curve a bit
+      ctx.lineWidth = 1;
+      ctx.fillStyle = "rgba(255,255,255,0.10)";
+      ctx.beginPath();
+      for (let i=0; i<=N; i++){
+        const t = i / N;
+        const nm = 380 + t*(700-380);
+        const v = spdValue(type, nm);
+        const x = left + t*plotW;
+        const y = y0 - v*plotH;
+        if (i===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+      }
+      ctx.lineTo(left+plotW, y0);
+      ctx.lineTo(left, y0);
+      ctx.closePath();
+      ctx.fill();
+
+      // Marker line at current wavelength
+      const wlNow = Number(wl.value);
+      const tNow = (wlNow - 380) / (700 - 380);
+      const xNow = left + tNow*plotW;
+      ctx.strokeStyle = "rgba(255,211,107,0.85)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(xNow, top);
+      ctx.lineTo(xNow, y0);
+      ctx.stroke();
+
+      // Title
+      ctx.fillStyle = "rgba(255,255,255,0.92)";
+      ctx.font = "18px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      const title =
+        type === "sun" ? "Sunlight-ish (broad spectrum)" :
+        type === "warm" ? "Warm LED-ish (blue pump + yellow bump)" :
+        type === "cool" ? "Cool LED-ish (strong blue + greener phosphor)" :
+        "Monochromatic-ish (narrow peak)";
+      ctx.fillText(title, left + 12, top + 34);
+    }
+
+    source.addEventListener("change", drawSpd);
+    wl.addEventListener("input", () => {
+      renderWavelength();
+      // Mono source depends on wavelength, and marker line always updates
+      drawSpd();
+    });
+
+    renderWavelength();
+    drawSpd();
+  </script>
+</body>
+</html>
