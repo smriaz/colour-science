@@ -187,14 +187,14 @@
 
       <div class="level-block level-mid">
         <ul>
-          <li>We’ll convert <strong>sRGB → linear RGB → XYZ → Lab</strong> (D65 white point).</li>
+          <li>We convert <strong>sRGB → linear RGB → XYZ → Lab</strong> (D65 white point).</li>
           <li>Then we compute <strong>ΔE76</strong> between two Lab colors.</li>
         </ul>
       </div>
 
       <div class="level-block level-uni">
         <p>
-          This uses the standard sRGB matrix and D65 white reference. ΔE76 is simple Euclidean distance in Lab;
+          This uses the standard sRGB matrix and D65 white reference. ΔE76 is Euclidean distance in Lab;
           better formulas exist (ΔE00), but ΔE76 is a clean first step.
         </p>
       </div>
@@ -205,7 +205,8 @@
       <div class="section-head">
         <h2>Try it: Convert and compare two colors (ΔE76)</h2>
         <p class="muted">
-          Pick Color A and Color B. We’ll compute XYZ and Lab for each, and the difference ΔE76.
+          Pick Color A and Color B. We compute XYZ and Lab for each, and ΔE76.
+          Use the “Nudge B” slider to make B move toward A (ΔE shrinks).
         </p>
       </div>
 
@@ -267,13 +268,24 @@
           <strong id="deTxt">—</strong>
         </div>
         <div class="muted" id="deHint" style="margin-top:6px;">
-          Rule of thumb (very rough): ~1 = barely noticeable, ~2–3 = noticeable, 5+ = obvious.
+          Rule of thumb (very rough): ~1 barely noticeable, ~2–3 noticeable, 5+ obvious.
         </div>
 
         <div class="twoBtns">
           <button class="btn btn--ghost" type="button" id="swapBtn">🔁 Swap A ↔ B</button>
           <button class="btn btn--ghost" type="button" id="randBBtn">🎲 Randomize B</button>
           <button class="btn btn--primary" type="button" id="matchBtn">🎯 Make B close to A</button>
+        </div>
+
+        <div class="control" style="margin-top:12px;">
+          <label for="nudge">Nudge B toward A <span class="kbd" id="nudgeNum">0%</span></label>
+          <input id="nudge" type="range" min="0" max="100" step="1" value="0" />
+          <div class="hint">Moves Color B toward Color A (in RGB). ΔE should shrink as B gets closer.</div>
+        </div>
+
+        <div class="twoBtns">
+          <button class="btn btn--ghost" type="button" id="awayBtn">↗️ Push B away</button>
+          <button class="btn btn--ghost" type="button" id="resetNudgeBtn">↩️ Reset nudge</button>
         </div>
       </div>
     </section>
@@ -393,6 +405,10 @@
       swapBtn: $("swapBtn"),
       randBBtn: $("randBBtn"),
       matchBtn: $("matchBtn"),
+      nudge: $("nudge"),
+      nudgeNum: $("nudgeNum"),
+      awayBtn: $("awayBtn"),
+      resetNudgeBtn: $("resetNudgeBtn"),
     };
 
     const state = {
@@ -409,7 +425,7 @@
 
     function setSideFromRGB(side, rgb, source=""){
       state[side] = { r: clamp255(rgb.r), g: clamp255(rgb.g), b: clamp255(rgb.b) };
-      // push into UI
+
       const S = UI[side];
       S.r.value = String(state[side].r);
       S.g.value = String(state[side].g);
@@ -420,15 +436,20 @@
       S.bVal.textContent = String(state[side].b);
 
       const hx = rgbToHex(state[side]);
-      // only overwrite hex field if change wasn't caused by the user typing an invalid partial hex
       if (source !== "hex-typing") S.hex.value = hx;
       S.hexStatus.textContent = hx;
+
+      // If B changed by anything other than nudge slider move, re-base the nudge system
+      if (side === "B" && source !== "nudge"){
+        baseB = { ...state.B };
+        UI.nudge.value = "0";
+        UI.nudgeNum.textContent = "0%";
+      }
 
       render();
     }
 
     function render(){
-      // A
       for (const side of ["A","B"]){
         const S = UI[side];
         const rgb = state[side];
@@ -439,13 +460,12 @@
         const lab = xyzToLab(xyz);
         S.xyzTxt.textContent = fmtXYZ(xyz);
         S.labTxt.textContent = fmtLab(lab);
-        S._lab = lab; // cache for ΔE
+        S._lab = lab;
       }
 
       const dE = deltaE76(UI.A._lab, UI.B._lab);
       UI.deTxt.textContent = dE.toFixed(2);
 
-      // playful hint scaling
       let hint = "Rule of thumb (very rough): ~1 barely noticeable, ~2–3 noticeable, 5+ obvious.";
       if (dE < 1) hint = "👀 Very close: many people won’t notice a difference.";
       else if (dE < 3) hint = "🙂 Small difference: noticeable if you compare carefully.";
@@ -477,11 +497,9 @@
           if (commit){
             setSideFromRGB(side, parsed);
           } else {
-            // live update as you type valid full hex
             setSideFromRGB(side, parsed, "hex-typing");
           }
         } else {
-          // show "invalid" lightly (don’t break anything)
           S.hexStatus.textContent = "#invalid";
         }
       }
@@ -498,10 +516,8 @@
       S.hex.addEventListener("blur", () => {
         const parsed = parseHex(S.hex.value);
         if (parsed){
-          // normalize formatting on blur
           setSideFromRGB(side, parsed);
         } else {
-          // restore current valid color
           S.hex.value = rgbToHex(state[side]);
           S.hexStatus.textContent = rgbToHex(state[side]);
         }
@@ -513,6 +529,7 @@
       const tmp = { ...state.A };
       state.A = { ...state.B };
       state.B = tmp;
+
       setSideFromRGB("A", state.A);
       setSideFromRGB("B", state.B);
     });
@@ -527,7 +544,6 @@
     });
 
     UI.matchBtn.addEventListener("click", () => {
-      // Make B close to A by small random perturbation
       const a = state.A;
       const rgb = {
         r: clamp255(a.r + Math.floor((Math.random()*21)-10)),
@@ -535,6 +551,51 @@
         b: clamp255(a.b + Math.floor((Math.random()*21)-10)),
       };
       setSideFromRGB("B", rgb);
+    });
+
+    // ---- Nudge system (ΔE "drives" B by moving it toward/away from A) ----
+    function lerp(a,b,t){ return a + (b-a)*t; }
+
+    // remembered base B for stable slider behavior
+    let baseB = { ...state.B };
+
+    function applyNudge(){
+      const t = Number(UI.nudge.value) / 100;
+      UI.nudgeNum.textContent = Math.round(t*100) + "%";
+
+      const A = state.A;
+      const B0 = baseB;
+
+      const moved = {
+        r: clamp255(Math.round(lerp(B0.r, A.r, t))),
+        g: clamp255(Math.round(lerp(B0.g, A.g, t))),
+        b: clamp255(Math.round(lerp(B0.b, A.b, t))),
+      };
+      setSideFromRGB("B", moved, "nudge");
+    }
+
+    UI.nudge.addEventListener("input", applyNudge);
+
+    UI.resetNudgeBtn.addEventListener("click", () => {
+      UI.nudge.value = "0";
+      baseB = { ...state.B };
+      UI.nudgeNum.textContent = "0%";
+      render();
+    });
+
+    UI.awayBtn.addEventListener("click", () => {
+      const A = state.A;
+      const B = state.B;
+      const k = 1.25; // push factor
+      const pushed = {
+        r: clamp255(Math.round(A.r + (B.r - A.r) * k)),
+        g: clamp255(Math.round(A.g + (B.g - A.g) * k)),
+        b: clamp255(Math.round(A.b + (B.b - A.b) * k)),
+      };
+      baseB = { ...pushed };
+      UI.nudge.value = "0";
+      UI.nudgeNum.textContent = "0%";
+      setSideFromRGB("B", pushed);
     });
 
     // init wiring + initial render
